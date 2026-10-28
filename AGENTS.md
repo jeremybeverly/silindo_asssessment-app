@@ -36,7 +36,7 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 - Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.1**, Flux UI **2.13**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
 - Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
 - No assessment domain code, routes, or tables exist.
-- The application database is currently **SQLite** (scaffold default). The target is a dedicated **PostgreSQL** database; this is **not yet configured**.
+- Local development already runs on **PostgreSQL 18.6** (`assessment_app`, starter migrations applied); `.env` is gitignored. Tracked files still default to **SQLite** (`.env.example`, `phpunit.xml`, CI), so tests and CI do not yet exercise PostgreSQL. The switch plan is `docs/DECISIONS.md` D-014.
 - No integration with the office dashboard exists.
 - The repository is a git repository as of 2026-10-28 (branch `main`; initial scaffold/docs commit `4a6bcd5`). No remote or branch protection is configured yet. `AGENTS.md` is versioned; tool-specific agent config (`.codex`, `.pi`, `.zed`, `opencode.json`, `boost.json`) stays ignored by the starter `.gitignore`.
 

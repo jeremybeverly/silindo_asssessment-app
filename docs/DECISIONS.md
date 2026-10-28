@@ -43,7 +43,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | D-011 | Deployment target | Pending |
 | D-012 | Retention and deletion policy | Pending |
 | D-013 | Versioned JSON API with Eloquent resources | Proposed |
-| D-014 | Switch local development to PostgreSQL before feature work | Proposed |
+| D-014 | Switch local development to PostgreSQL before feature work | Proposed (local `.env` uses PostgreSQL; tracked config still SQLite) |
 | D-015 | Disable public registration for candidates | Proposed (launch blocker) |
 | D-016 | MVP scope and system boundaries | Confirmed (2026-10-28) |
 | D-017 | Launch date renegotiation | Direction Confirmed; new date Pending |
@@ -189,13 +189,27 @@ This log records project and technical decisions. HR policy decisions are owned 
 
 ## D-014: Switch local development to PostgreSQL before feature work
 
-- **Status:** Proposed
+- **Status:** Proposed (local `.env` already points at PostgreSQL; tracked config still SQLite)
 - **Date:** 2026-10-28
 - **Owner:** Engineering
-- **Context:** The scaffold runs on SQLite; production is intended to use PostgreSQL. Developing on a different engine risks migration and query surprises.
-- **Decision (proposal):** Configure a local PostgreSQL database and update `.env.example` before the first assessment migration. Do not change configuration until documentation is approved.
-- **Impact:** Requires PostgreSQL available locally and a documented setup step. Existing starter migrations should be verified on PostgreSQL.
-- **Review trigger:** Explicit approval (still Proposed); execution is planned for Phase 2b after Gate G1.
+- **Context:** The scaffold runs on SQLite; production is intended to use PostgreSQL. Developing on a different engine risks migration and query surprises. A local PostgreSQL 18.6 instance is already running with the starter migrations applied. That was done outside this documentation track and is local-only: `.env` is gitignored, so no tracked file depends on it yet.
+- **Decision (proposal):** Configure a local PostgreSQL database and update `.env.example` before the first assessment migration. Do not change tracked configuration until approved.
+- **Current state (verified 2026-10-28, read-only checks):**
+  - Local: PostgreSQL 18.6 on `127.0.0.1:5432`, database `assessment_app`, 10 tables, 5 starter migrations ran in batch 1.
+  - `.env`: `DB_CONNECTION=pgsql` (local only; never committed).
+  - `.env.example`: still `DB_CONNECTION=sqlite` (committed).
+  - `phpunit.xml`: forces `sqlite` / `:memory:`, so the test suite never exercises PostgreSQL.
+  - CI (`.github/workflows/tests.yml`): no PostgreSQL service, so CI inherits the SQLite test settings.
+  - A leftover `database/database.sqlite` remains locally; it is gitignored.
+- **Implementation plan (documented, not yet applied to tracked config):**
+  1. Update `.env.example` to PostgreSQL with **placeholder** credentials (`DB_CONNECTION=pgsql`, host, port, database, user, empty password); no real secrets in the repository.
+  2. Choose the test-database policy. Preferred: run tests on PostgreSQL (`assessment_app_test`) for engine parity; SQLite `:memory:` is the fallback only when no server is available. `RefreshDatabase` is already applied globally in `tests/Pest.php`.
+  3. Create a separate `assessment_app_test` database locally; never reuse the development database for tests and never point at the office application's database.
+  4. Add a `postgres:18` service container (with health check) to the CI workflow and align its DB env with `phpunit.xml`, so `composer ci:check` actually exercises PostgreSQL.
+  5. Verification checklist: `config:clear` → `migrate:fresh` on a scratch database → `migrate:rollback` → `migrate` → `php artisan test` against PostgreSQL → `php artisan db:show` sanity check. Confirm no SQLite-only SQL and no portable-schema assumptions in migrations.
+  6. Delete the stale local `database/database.sqlite` once the switch is verified (already gitignored).
+- **Impact:** Requires PostgreSQL available locally (available) and a documented setup step (above). Tracked-config changes still need approval; production database host, credentials, and provider remain Pending (HRQ-22) and are not assumed.
+- **Review trigger:** Approve steps 1–4 (tracked config, tests, CI) at Phase 2b; re-verify before the first assessment migration. Local instance already exists, so no new infrastructure decision is implied.
 
 ## D-015: Disable public registration for candidates
 
