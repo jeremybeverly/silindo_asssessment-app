@@ -12,7 +12,7 @@ Source: project brief supplied by the project owner on 2026-10-28, plus reposito
 | --- | --- | --- |
 | C-01 | The application is candidate-facing and delivered online. | Core purpose. |
 | C-02 | It is a separate Laravel application. | Independent codebase from the office app. |
-| C-03 | It has its own PostgreSQL database. | Implementation not configured yet; scaffold uses SQLite. |
+| C-03 | It has its own PostgreSQL database. | Confirmed; applied 2026-10-28 (D-014). Local dev/test use PostgreSQL; production host Pending (HRQ-22). |
 | C-04 | HR reviews finalized assessment results in the existing internal office dashboard. | This app does not provide the HR review UI. |
 | C-05 | The office application is Laravel + PostgreSQL. | Integration peer. |
 | C-06 | Integration between the two applications is required; an authenticated server-to-server API is the likely approach. | API contract, direction, and environment are **Pending**. |

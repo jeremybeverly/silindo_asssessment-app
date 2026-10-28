@@ -100,10 +100,11 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 - Inspect the scaffold and record gaps (largely done in the documentation review; keep current).
 - Verify existing starter tests pass on the unmodified scaffold (`php artisan test --compact`).
 - Development tooling: formatter/static-analysis baselines and CI checks as needed.
-- PostgreSQL setup **planning**: the switch plan (connection, `.env.example`, test-database policy, CI service, migration verification) is recorded in `docs/DECISIONS.md` D-014. A local PostgreSQL 18.6 instance already runs the starter migrations; tracked config, tests, and CI still use SQLite until D-014 is approved.
+- PostgreSQL **setup**: applied 2026-10-28 under D-014 — `.env.example`, `phpunit.xml`, and CI target PostgreSQL. The `assessment_app_test` database must exist locally before the suite runs on PostgreSQL.
 
 **Gate G2a — Safe foundation ready**
-- Clean test run on the unmodified scaffold; PostgreSQL switch plan documented (D-014); no domain code.
+- Clean test run on the unmodified scaffold; PostgreSQL switch applied (D-014); no domain code.
+- **Status 2026-10-28:** git initialized, baseline committed, PostgreSQL switch applied and verified (34 tests / 83 assertions on `assessment_app_test`). **Gate G2a met; no domain code exists.**
 
 ### Phase 2b — Domain foundation (requires Gate G1 answers plus D-014/D-015 approval)
 

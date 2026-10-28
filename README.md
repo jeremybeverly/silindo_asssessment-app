@@ -44,16 +44,16 @@ Status labels used throughout: **Confirmed**, **Proposed**, **Pending**, **Defer
 | Framework | Laravel 13.39, PHP 8.5 runtime | Confirmed |
 | UI | Livewire 4, Flux UI 2, Tailwind 4, Vite | Confirmed |
 | Auth | Laravel Fortify (starter kit: login, registration, 2FA, passkeys) | Confirmed scaffold |
-| Database | SQLite (scaffold default); PostgreSQL required | **Gap — Pending** |
+| Database | PostgreSQL 18.6 locally (`assessment_app`); tests on `assessment_app_test`; CI provisions `postgres:18` | Confirmed (D-014, 2026-10-28) |
 | Assessment domain | None | Confirmed |
 | Office integration | None | Confirmed |
-| Git repository | Not initialized | Confirmed (2026-10-28) |
+| Git repository | Initialized on `main`; initial commit `4a6bcd5` | Confirmed (2026-10-28) |
 
 The scaffold's authentication and settings screens are starter-kit code, not product requirements. Candidate access is invitation-only (**Confirmed**, D-005). Whether the starter kit's public registration/login routes are disabled or removed is still **Proposed** (D-015) and must be resolved before launch.
 
 ## Local development (existing scaffold only)
 
-Prerequisites: PHP 8.3+, Composer, Node.js 22+, and PostgreSQL for target-parity work (not yet configured).
+Prerequisites: PHP 8.3+, Composer, Node.js 22+, and a running PostgreSQL 18 instance with two databases: `assessment_app` (development) and `assessment_app_test` (tests), owned by the role in `.env`. The test database must exist before running the suite.
 
 ```bash
 composer install
@@ -72,7 +72,7 @@ composer lint
 composer types:check
 ```
 
-Do not add migrations, dependencies, or configuration changes as part of documentation work. Database configuration will be migrated from SQLite to PostgreSQL only after approval.
+Do not add migrations, dependencies, or configuration changes for unresolved requirements. Database configuration targets PostgreSQL (D-014, applied 2026-10-28); domain work still waits for Gate G1.
 
 ## Working agreement
 

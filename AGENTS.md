@@ -36,7 +36,7 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 - Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.1**, Flux UI **2.13**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
 - Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
 - No assessment domain code, routes, or tables exist.
-- Local development already runs on **PostgreSQL 18.6** (`assessment_app`, starter migrations applied); `.env` is gitignored. Tracked files still default to **SQLite** (`.env.example`, `phpunit.xml`, CI), so tests and CI do not yet exercise PostgreSQL. The switch plan is `docs/DECISIONS.md` D-014.
+- Local development and tests run on **PostgreSQL 18.6** (`assessment_app` for the app, `assessment_app_test` for tests); `.env` is gitignored. `.env.example`, `phpunit.xml`, and CI all target PostgreSQL (D-014, Confirmed 2026-10-28).
 - No integration with the office dashboard exists.
 - The repository is a git repository as of 2026-10-28 (branch `main`; initial scaffold/docs commit `4a6bcd5`). No remote or branch protection is configured yet. `AGENTS.md` is versioned; tool-specific agent config (`.codex`, `.pi`, `.zed`, `opencode.json`, `boost.json`) stays ignored by the starter `.gitignore`.
 
@@ -66,7 +66,7 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 
 - Pest is the test framework. Default to feature tests; use `php artisan make:test --pest {name}`.
 - Add or update tests for meaningful behavior and failure modes, using model factories.
-- Run the narrowest relevant tests while working (`php artisan test --compact <path>` or `--filter=`).
+- Run the narrowest relevant tests while working (`php artisan test --compact <path>` or `--filter=`). Tests run on PostgreSQL (`assessment_app_test`); `phpunit.xml` pins `APP_ENV` and `DB_DATABASE` via `<server>` so a sourced `.env` cannot redirect the suite at the development database.
 - Do not delete tests without approval.
 - Before finalizing PHP changes, run `vendor/bin/pint --dirty --format agent`.
 - Type checks: `composer types:check` (PHPStan/Larastan, level 7). CI runs `composer ci:check`.
