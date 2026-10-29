@@ -264,7 +264,7 @@ If the schedule slips, cut in this order:
 | Authorized scoring specification never supplied | Report cannot show real DISC output | Ship labelled mock layout and raw results; do not invent scores; escalate HRQ-32. |
 | Question edits after use change historical meaning | Corrupted results | Enforce versioning/locking (D-024); tests for immutability. |
 | Instrument requires fixed item order that conflicts with confirmed randomization | Presentation change or approval delay | Validate with HR before content import (HRQ-31); any exception needs explicit approval. |
-| Office team unavailable | No live integrations (question API, invitation API, result API) | Pilot fallbacks: engineering-run seeds and conditional raw export; schedule APIs post-launch. |
+| Office team unavailable | No live question, invitation, or result APIs | Question bank is a required MVP outcome (D-023); its seeding fallback needs sponsor approval, a time limit, and a replacement plan. Invitation integration is the confirmed intended workflow (D-018), but whether it is a production-launch requirement is **Pending** (HRQ-09): any fallback requires explicit sponsor/HR approval, a time limit, and a named replacement plan, and must not become the production design. Result export remains conditional on D-009/HRQ-08/HRQ-30. Do not schedule the APIs post-launch by default. |
 | Scoring demanded at launch | Confidential formula unavailable | Escalate immediately; raw M/L fallback; do not invent. |
 | Privacy/consent not approved | Cannot launch | Prepare flow with placeholder marked DRAFT; launch blocked until approved. |
 | Deployment not chosen | No production environment | Decide before Phase 9; do not assume a provider. |
