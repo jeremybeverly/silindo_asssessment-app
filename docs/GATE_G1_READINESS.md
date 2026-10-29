@@ -21,7 +21,7 @@ Consequences:
 - The scoring contract (HRQ-32) is **not** part of G1 and does not block schema or capture work (D-022).
 - Safe work available now: documentation, design artifacts, and non-domain tooling. There is no domain slice that can start without at least HRQ-02 and HRQ-33.
 - **Office-dashboard review: COMPLETE (read-only, 2026-10-29)** — the app is accessible, Laravel 12 with Sanctum APIs and HRD role gates, but has **no outbound HTTP client and no assessment/invitation features** (§5). Repository separation needs fixing before either app is committed.
-- **Integration approach:** proposed as an additive, flag-gated client module in the dashboard, with the assessment app as provider (§5).
+- **Integration approach:** proposed as an additive, flag-gated client module in the dashboard, with the assessment app as provider (D-025, Proposed; §5).
 
 Two environment observations need attention before implementation (details in §4): the local `.env` currently points the application at the **test** database, and there is **no API authentication package** installed.
 
@@ -112,7 +112,7 @@ Read-only inspection on 2026-10-29.
 
 ### Proposed integration approach (risk-isolated, additive)
 
-Principle: the assessment app is the **provider**; the dashboard is a **consumer** with a new, flag-gated client module. The dashboard only receives **new files** plus new route entries inside its existing `auth` + `role:hrd` group. No existing controller, model, migration, layout, or auth path is edited, so the integration can be switched off without rollback.
+Principle: the assessment app is the **provider**; the dashboard is a **consumer** with a new, flag-gated client module (D-025, Proposed). The dashboard only receives **new files** plus new route entries inside its existing `auth` + `role:hrd` group. No existing controller, model, migration, layout, or auth path is edited, so the integration can be switched off without rollback.
 
 | Phase | Work | Where |
 | --- | --- | --- |
@@ -128,6 +128,16 @@ Non-negotiable properties:
 - **Office-initiated only** — the dashboard calls the assessment API with a scoped token, avoiding outbound calls from the assessment app. Note: the assessment app has **no Sanctum/Passport yet**; that dependency is an assessment-side decision.
 - **No secrets in code** — base URL and token in `.env`; placeholders only in `.env.example`.
 - **Result display** — start with link-out or a thin read-only page; do not write results into the dashboard database.
+
+### Seam contract outline (Proposed — no payload schema agreed)
+
+Behaviour-level only; fields and paths remain open until HR and the office team confirm them. All seams are office-initiated under `/api/v1` (D-013, Proposed).
+
+| Seam | Operations | Retry / idempotency | Failure handling | Provisional inputs |
+| --- | --- | --- | --- | --- |
+| Results | Retrieve a finalized result by reference; optional list for HR review | Read-only, safe to retry | New pages show "service unavailable"; existing HRD pages unaffected | HRQ-08 fields, HRQ-17 finalization |
+| Invitations | Create (returns candidate link), revoke, status | Idempotency key per create request | Error shown in dashboard; CLI fallback only with approval (HRQ-09) | HRQ-09, HRQ-10, HRQ-11 |
+| Questions | List/search, retrieve, create, update (new version), archive | Updates keyed by version; no blind retries on create | Question UI error only; seeding fallback only as approved exception | HRQ-02, HRQ-33 |
 
 ### Integration decisions that remain provisional
 

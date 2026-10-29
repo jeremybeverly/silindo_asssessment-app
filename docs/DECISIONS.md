@@ -54,6 +54,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | D-022 | Confidential scoring implemented only from an authorized specification | Confirmed deferral; implementation Pending |
 | D-023 | Question bank managed through the office dashboard API | Confirmed boundary; contract Pending |
 | D-024 | Question versioning protects historical attempts | Confirmed requirement; implementation Proposed |
+| D-025 | Integration approach: provider/consumer with additive, flag-gated seams | Proposed |
 
 ## D-001: Separate candidate-facing application
 
@@ -352,6 +353,24 @@ This log records project and technical decisions. HR policy decisions are owned 
 - **Impact:** Schema needs question version identity (not just a mutable row), and every response keys on the version shown. Prevents retroactive meaning changes; adds modest schema and API complexity.
 - **Review trigger:** HRQ-33 answered; before the question schema is finalized.
 
+## D-025: Integration approach: provider/consumer with additive, flag-gated seams
+
+- **Status:** Proposed
+- **Date:** 2026-10-29
+- **Owner:** Engineering + office application team
+- **Context:** Read-only inspection of the office dashboard (2026-10-29) found Laravel 12 with Sanctum APIs and HRD role gates, but **no outbound HTTP client and no assessment/invitation features**. The dashboard is a live internal tool with no CI and a hand-patched auth model, so integration must not destabilise its existing workflows. D-001, D-002, D-003, D-004, D-018, and D-023 already fix the ownership boundary.
+- **Decision (proposal):**
+  - The assessment app remains the **provider and system of record** for questions, invitations, attempts, responses, and results. No business process moves into the dashboard.
+  - The dashboard consumes the API through an **additive, flag-gated client module**: new config, one client class, thin HRD controllers/views, and new route entries inside the existing `auth` + `role:hrd` group. No edits to existing controllers, models, migrations, layouts, auth, or role middleware.
+  - The feature flag defaults **off**; when off, no routes are registered and no navigation item renders.
+  - No schema changes in the dashboard: results stay owned by the assessment app and are read on demand or linked out, never duplicated.
+  - Office-initiated calls only. The dashboard holds a scoped token; the assessment app does not call the dashboard.
+  - Contract-first: define the `/api/v1` contract before either side writes integration code; each seam is independently shippable behind its own flag.
+  - **Seam order (implementation, not scope):** results (read-only, lowest risk) → invitations (small idempotent write) → question CRUD (largest write surface, needs HRQ-33). Question CRUD remains a required MVP outcome (D-023); this order does not defer it.
+  - Each seam has a documented fallback (D-009 export; approved, time-boxed invitation/question seeding) so integration is never on the critical path for a working assessment.
+- **Impact:** Dashboard changes are isolated and reversible. Prerequisites: repository separation between the two apps, an assessment-side token mechanism (none installed), and office confirmation of HRQ-29 plus contract/environment details (HRQ-14/15/16). Failure of the assessment API affects only the new pages.
+- **Review trigger:** Office team confirms HRQ-29 and the auth mechanism; before the first dashboard integration branch is merged.
+
 ## Deliberately not decided yet
 
 | Topic | Why it is open | Where tracked |
@@ -363,6 +382,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | Question edit/archive rules | Affects versioning and historical integrity. | HRQ-33 |
 | Invitation creation and delivery details | Workflow confirmed (D-018); contract and delivery channel open. | HRQ-09, HRQ-10, HRQ-29 |
 | Office dashboard capability | Office-side development unverified; not assumed to exist. | HRQ-29 |
+| Integration contracts and auth | Approach Proposed (D-025); mechanism, payloads, environments open. | HRQ-14, HRQ-15, HRQ-16 |
 | Access-window and time-limit behaviour | Existence confirmed (D-019); durations and expiry behaviour open. | HRQ-04 |
 | Resume, retake, reset | Resume is Proposed; retake/reset undefined. | HRQ-12 |
 | Raw responses as the HR-reviewed output | Depends on the scoring decision; the fallback must not be oversold as a result. | HRQ-30 |
