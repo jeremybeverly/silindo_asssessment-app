@@ -325,7 +325,7 @@ This log records project and technical decisions. HR policy decisions are owned 
   - Each finalized result records which scoring implementation/version produced it, when compatible with the approved design.
   - Mock scoring/results are permitted for UI and integration testing only, and must be clearly labelled as test data; they are never presented as real candidate results.
   - Production scoring and result validation are not "complete" until the authorized implementation is integrated and approved.
-- **Impact:** The results page can ship with clearly labelled mock data, but real DISC output waits for HRQ-32. Do not mark scoring done in any status, roadmap, or README until integrated and approved.
+- **Impact:** The results page can ship with clearly labelled mock data, but real DISC output waits for HRQ-32. This gates scoring only: schema, question-bank, and raw M/L capture proceed independently (`ROADMAP.md` §0 "Gate scopes"). Do not mark scoring done in any status, roadmap, or README until integrated and approved.
 - **Review trigger:** HRQ-32 (authorized scoring integration contract) received; HRQ-05/06/07 answered.
 
 ## D-023: Question bank managed through the office dashboard API
@@ -339,7 +339,7 @@ This log records project and technical decisions. HR policy decisions are owned 
   - The office dashboard performs these operations by calling this application's **authenticated API**. It never writes to the assessment database directly.
   - This application owns the question records, validation, versioning, and lifecycle rules.
   - Question-content management stays separate from confidential scoring configuration; HR is not assumed to view or edit scoring rules.
-- **Impact:** Adds a third integration concern (D-004) with its own contract, versioning, and error handling. Until the API exists, a pilot fallback is required for seeding questions. Office-side effort is Pending confirmation (HRQ-29).
+- **Impact:** Adds a third integration concern (D-004) with its own contract, versioning, and error handling. This is a **required MVP outcome**, not an optional enhancement. A CLI/CSV seeding helper is permitted only as an explicitly approved, time-boxed pilot exception if the office-side delivery cannot make the date; it does not satisfy the intended HR workflow and must never become the production design. Office-side effort is Pending confirmation (HRQ-29).
 - **Review trigger:** HRQ-29 (office capability and timeline), HRQ-33 (lifecycle rules), HRQ-02 (question content).
 
 ## D-024: Question versioning protects historical attempts

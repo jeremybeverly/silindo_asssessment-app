@@ -6,9 +6,12 @@ Project-wide instructions for any coding agent (OpenCode, Codex, Cursor, Claude,
 
 - The documentation foundation was **approved on 2026-10-28** (Gate G0). The MVP path and system boundaries are confirmed (`docs/DECISIONS.md` D-016).
 - HR confirmed the instrument and core flow on **2026-10-29**: DISC framework, one shared question bank, one statement per question with exactly one **M (Most)** or **L (Least)** response, invitation access window, assessment time limit, one attempt per invitation, and a mobile-first candidate experience (`D-019`, `D-021`). HR's scoring rules are **confidential** and not supplied (`D-022`).
-- Domain work is still **gated** on the remaining inputs in `docs/HR_OPEN_QUESTIONS.md`: question content, identity fields, result fields, question lifecycle, access/time-limit values, and the authorized scoring contract. The launch date is under renegotiation (`D-017`).
+- Domain/schema work is gated only on the schema inputs: question content, identity fields, question lifecycle rules, and the API boundary (`docs/ROADMAP.md` §0 "Gate scopes"). The scoring contract is **not** a prerequisite — see D-022.
+- Candidate-flow behaviour is finalized for production only when timing/expiry, resume, finalization, and result-field policies are settled (HRQ-04, HRQ-08, HRQ-12, HRQ-17). Build the mechanism with configuration; do not invent the policy.
+- Scoring integration waits on HRQ-32 (authorized specification). Never invent DISC formulas, mappings, thresholds, interpretations, or result fields.
 - **Permitted now:** documentation work, scaffold inspection, tooling, and tests that do not encode unresolved policy.
-- **Still prohibited:** domain migrations, models, routes, or UI that depend on unresolved requirements; any invented DISC scoring, mapping, threshold, or interpretation; committing real candidate data or secrets. These wait for the named Gate G1 answers, or an explicit decision recorded in `docs/DECISIONS.md`.
+- **Still prohibited:** domain migrations, models, routes, or UI that depend on unresolved requirements; any invented DISC scoring, mapping, threshold, or interpretation; committing real candidate data or secrets. These wait for the named scope inputs, or an explicit decision recorded in `docs/DECISIONS.md`.
+- **Question-bank management through the office dashboard is a required MVP outcome** (D-023). A CLI/CSV seeding helper is permitted only as an explicitly approved, time-boxed pilot exception — never as the production design.
 - When a domain slice is approved, work in small, tested slices against `docs/REQUIREMENTS.md` and `docs/ROADMAP.md`.
 
 ## Read before changing anything

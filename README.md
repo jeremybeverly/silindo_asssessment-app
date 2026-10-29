@@ -2,7 +2,7 @@
 
 Candidate-facing online DISC workplace personality assessment for HRD.
 
-> **Status: foundation complete; domain decisions pending.** The documentation set was approved on 2026-10-28 (Gate G0) and updated 2026-10-29 with HR confirmations (DISC, one-statement M/L format, access window, time limit, one attempt, mobile-first). No assessment features are implemented. Domain work waits on the remaining Gate G1 inputs (question content, identity fields, result fields) and the authorized scoring contract; the launch date is under renegotiation — see `docs/ROADMAP.md`.
+> **Status: foundation complete; domain decisions pending.** The documentation set was approved on 2026-10-28 (Gate G0) and updated 2026-10-29 with HR confirmations (DISC, one-statement M/L format, access window, time limit, one attempt, mobile-first). No assessment features are implemented. Schema work waits on the schema inputs only (question content, identity fields, question lifecycle, API boundary); scoring has its own gate (HRQ-32) and does not block capture work. The launch date is under renegotiation — see `docs/ROADMAP.md`.
 
 ## What this application is
 

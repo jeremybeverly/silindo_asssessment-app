@@ -20,11 +20,13 @@ This register lists decisions owned by HR, the project sponsor, or the office ap
 
 ## Minimum decision set
 
-**To start domain work:** HRQ-02 (question content/format details), HRQ-11 (identity fields), HRQ-33 (question lifecycle rules), and confirmation of HRQ-29 (office-side API capability).
+**To start domain/schema work** (the scoring contract is **not** required): HRQ-02 (question content), HRQ-11 (identity fields), HRQ-33 (question lifecycle rules), and the HRQ-29 API boundary.
 
-**To start the scoring slice:** HRQ-32 (authorized scoring integration contract). Do not ask HR to disclose the formula itself.
+**To finalize candidate-flow behaviour for production:** HRQ-04 (access-window/time-limit values, expiry handling), HRQ-12 (resume/reset), HRQ-17 (finalization), HRQ-08 (result fields). The flow can be built with configuration before these land; it cannot be signed off.
 
-**To launch:** the above plus HRQ-04 (durations and expiry behaviour), HRQ-08 (result fields), HRQ-09/10 (invitation delivery), HRQ-14/15 (result API contract or accepted export), HRQ-17, HRQ-18, HRQ-19, HRQ-22, HRQ-24, HRQ-27, HRQ-30, HRQ-31.
+**To start the scoring slice:** HRQ-32 (authorized scoring integration contract). Do not ask HR to disclose the formula itself. This gate blocks Phase 8 only.
+
+**To launch:** the above plus HRQ-09/10 (invitation delivery), HRQ-14/15 (result API contract or accepted export), HRQ-18, HRQ-19, HRQ-22, HRQ-24, HRQ-27, HRQ-30, HRQ-31.
 
 **To re-baseline the schedule:** HRQ-28 (new launch date; owner: project sponsor).
 
@@ -64,7 +66,7 @@ The interim G1 target is **2026-10-29 12:00**. With the launch date under renego
 | HRQ-14 | Is the handoff push (this app calls the office API) or pull (office app reads from this app)? Who owns the receiving endpoint and which auth method is used? | Determines API direction, credentials, retries, and deployment. | P1 | Use authenticated CSV/JSON export fallback (D-009). | Office app team |
 | HRQ-15 | What is the payload schema, candidate identifier, result identifier, and idempotency/retry rule? | Prevents duplicates and mismatched candidate records. | P1 | Export with documented columns; no live API. | Office app team + HR |
 | HRQ-16 | Which environments, base URLs, IP allowlists, and test credentials exist? | Cannot test or deploy integration without them. | P1 | Staging integration Deferred. | Office app team / ops |
-| HRQ-29 | Can the office application add authenticated calls for **question-bank CRUD**, invitation creation/revocation/status, and result retrieval — and on what timeline? Does similar capability already exist? | The intended HR workflows (D-018, D-023) depend on office-side development; it is not assumed to exist. | P1 (blocks the intended workflows; pilot fallbacks available) | Engineering-run Artisan/CSV seeds for questions and invitations (D-018, D-023). | Office app team |
+| HRQ-29 | Can the office application add authenticated calls for **question-bank CRUD**, invitation creation/revocation/status, and result retrieval — and on what timeline? Does similar capability already exist? | The intended HR workflows (D-018, D-023) depend on office-side development; it is not assumed to exist. | P1 (blocks the required question-bank MVP; invitation/result APIs may use pilot fallbacks) | Question-bank: sponsor-approved, time-boxed CLI/CSV seeding exception only — not a permanent substitute. Invitations/results: engineering-run seeds or export (D-018, D-009). | Office app team |
 | HRQ-17 | What exactly counts as a "finalized result" that HR may review? Is submission enough, or is HR approval required? | Defines state transitions and what may be exported. | **P0** for result slice | No default. Proposed option: submitted and locked after candidate confirmation; HR approval step Pending. | HR |
 
 ## D. Data protection, retention, and consent
@@ -108,7 +110,7 @@ These were stated by HR and are recorded as requirements; they are no longer ope
 | --- | --- | --- |
 | An active attempt is resumable after refresh or browser closure, without creating a second attempt | HRQ-12 | D-019 |
 | Reissue rotates the token and invalidates the old one | HRQ-13 | D-018 |
-| Engineering-run CLI/CSV pilot fallbacks until the office APIs exist | HRQ-29 | D-018, D-023 |
+| Engineering-run CLI/CSV seeding as a pilot exception until the office APIs exist (questions: sponsor-approved and time-boxed only; never the production design) | HRQ-29 | D-018, D-023 |
 
 ## Response log
 

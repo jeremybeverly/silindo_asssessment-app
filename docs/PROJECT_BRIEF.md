@@ -41,7 +41,7 @@ Deliver a minimal, reliable candidate assessment application — launch date und
 - Candidate-facing DISC assessment flow: mobile-first, one statement per question, exactly one M/L selection. **Confirmed**
 - Storage of assessment definitions, questions, invitations, attempts, responses, and results in this application's database. **Confirmed**
 - Ownership of question data and question rules, invitation records, tokens, validation, attempts, responses, and result finalization in this app. **Confirmed** boundary
-- Question-bank integration: HR manages questions in the office dashboard via this app's authenticated API. **Confirmed** (contract Pending)
+- Question-bank integration: HR manages questions in the office dashboard via this app's authenticated API. **Confirmed, required MVP outcome** (contract Pending).
 - Invitation lifecycle integration with the office dashboard: creation on request, revocation, status retrieval. **Confirmed** workflow (contract Pending)
 - Finalization of results with an immutable snapshot. **Proposed** (definition Pending)
 - Handoff of finalized results to the office dashboard. **Confirmed need**; mechanism Pending
@@ -136,13 +136,14 @@ Proposed definition of success:
 1. An invited candidate can open the link on a phone, understand the M/L instruction and consent, complete the assessment, and submit without engineering support.
 2. Answers survive a page refresh or brief connection loss during an active attempt.
 3. The access window, time limit, and one-attempt rule are enforced server-side.
-4. A submitted attempt is locked and cannot be altered by the candidate.
-5. HR can retrieve a finalized result for the candidate through the agreed handoff (API or documented export).
-6. No candidate can access another candidate's attempt or result.
-7. HR can manage questions from the office dashboard without touching the assessment database.
-8. Report content is either produced by the authorized scoring implementation or clearly labelled mock data — never an invented DISC interpretation.
-9. The flow works on a modern mobile browser and a desktop browser.
-10. All automated tests pass; no secrets or real candidate data are present in the repository.
+4. Every candidate receives the complete applicable question set; question order is randomized per attempt, persisted, and stable across refresh/resume; responses reference stable question/response identifiers rather than display positions; M/L labels keep fixed meanings and are never swapped or randomized (D-020).
+5. A submitted attempt is locked and cannot be altered by the candidate.
+6. HR can retrieve a finalized result for the candidate through the agreed handoff (API or documented export).
+7. No candidate can access another candidate's attempt or result.
+8. HR can manage questions from the office dashboard without touching the assessment database — required MVP outcome, not a CLI substitute.
+9. Report content is either produced by the authorized scoring implementation or clearly labelled mock data — never an invented DISC interpretation.
+10. The flow works on a modern mobile browser and a desktop browser.
+11. All automated tests pass; no secrets or real candidate data are present in the repository.
 
 ## 10. Risks
 

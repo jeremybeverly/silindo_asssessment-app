@@ -6,11 +6,23 @@
 
 - Gate G0 passed: documentation approved; MVP path and system boundaries confirmed (D-016).
 - Gate G2a passed: foundation complete — git, PostgreSQL, CI (D-014), 34 tests green.
-- HR confirmed the instrument, response format, access window, time limit, one attempt, and mobile-first on 2026-10-29 (D-019, D-021, D-022, D-023). Gate G1 is now limited to the remaining inputs: question content, identity fields, result fields, and authorized scoring.
+- HR confirmed the instrument, response format, access window, time limit, one attempt, and mobile-first on 2026-10-29 (D-019, D-021, D-022, D-023).
 - Sponsor initiated launch-date renegotiation (D-017); the new launch date is Pending (HRQ-28).
 - Phases keep the sequence below; calendar dates are placeholders until the new launch date is agreed.
 
 The scope tiers and phase sequence were approved on 2026-10-28 and extended 2026-10-29. Remaining inputs are tracked in `HR_OPEN_QUESTIONS.md`; the interim G1 target is 2026-10-29 12:00 pending re-baseline.
+
+### Gate scopes
+
+Gates gate different slices, not the whole project. The scoring contract blocks scoring only.
+
+| Scope | Required inputs | Not required |
+| --- | --- | --- |
+| Domain/schema foundation (G1 → G2b, G3) | HRQ-02 question content, HRQ-11 identity fields, HRQ-33 question lifecycle, HRQ-29 API boundary | HRQ-32 scoring contract, HRQ-04 durations, HRQ-08 result fields |
+| Candidate attempt flow (G4, G5) — buildable with configuration | HRQ-02, HRQ-11, HRQ-33 (questions seeded via approved pilot helper if the API is not ready) | HRQ-32, HRQ-29 office-side delivery |
+| Candidate attempt flow — production-ready behaviour | HRQ-04 access-window/time-limit values and expiry handling, HRQ-12 resume/reset, HRQ-17 finalization, HRQ-08 result fields | — |
+| Question-bank MVP integration (G6) | HRQ-29 office-side capability | HRQ-32 |
+| Scoring integration (G8) | HRQ-32 authorized specification/contract | — |
 
 ## 1. Reality check
 
@@ -22,7 +34,7 @@ Anything not on that path is deferred. HR screens, email automation, retakes, an
 
 ## 2. Scope tiers
 
-### Must have (MVP direction Confirmed; individual items Proposed)
+### Must have (MVP direction Confirmed; individual items keep their own status)
 
 The MVP path and boundaries are Confirmed (D-016). The items below keep their own statuses in `REQUIREMENTS.md`.
 
@@ -30,6 +42,7 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 - Candidate identity data supplied by HR.
 - Instructions and consent acknowledgement, with version and timestamp.
 - One shared question bank; one statement per question; exactly one M (Most) or L (Least) per statement (Confirmed, D-021).
+- **Required MVP outcome:** HR manages the shared question bank from the existing office dashboard through this app's authenticated API (D-023). The office application never writes to the assessment database and holds no question business rules.
 - Every candidate receives the complete set; question order randomized per attempt and persisted across resume; M/L meanings fixed (Confirmed, D-020).
 - Server-enforced time limit and one-attempt rule (Confirmed existence, D-019; durations Pending HRQ-04).
 - Server-side M/L answer persistence; resumable active attempt (Proposed, D-019).
@@ -41,9 +54,7 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 
 ### Should have (only if time permits)
 
-- Question-bank CRUD API for the office dashboard (D-023; contract Pending HRQ-29).
-- Invitation lifecycle API for the office dashboard (D-018; office-side capability Pending HRQ-29).
-- Pilot fallback tooling: Artisan/CSV seeds for questions and invitations until the APIs exist.
+- Invitation lifecycle API for the office dashboard (D-018; office-side capability Pending HRQ-29). A temporary pilot fallback is acceptable here only.
 - Result handoff API to the office dashboard (D-004).
 - Results-page layout using clearly labelled mock data (D-022, FR-21).
 
@@ -85,11 +96,12 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 **Date:** HR confirmations 2026-10-29; remaining inputs pending · **Owner:** HR + sponsor + office team
 
 - Instrument, response format, access window, time limit, one attempt, and mobile-first are confirmed (D-019, D-021).
-- Remaining inputs: question content (HRQ-02), identity fields (HRQ-11), result fields (HRQ-08) and finalization (HRQ-17), question lifecycle (HRQ-33), access/time-limit values and expiry behaviour (HRQ-04), authorized scoring contract (HRQ-32).
+- Remaining inputs by scope (see Gate scopes above): schema — question content (HRQ-02), identity fields (HRQ-11), question lifecycle (HRQ-33), API boundary (HRQ-29); production candidate flow — access/time-limit values and expiry behaviour (HRQ-04), resume/reset (HRQ-12), finalization (HRQ-17), result fields (HRQ-08); scoring — authorized contract (HRQ-32).
 - Record answers in `HR_OPEN_QUESTIONS.md` and decisions in `DECISIONS.md`.
 
 **Gate G1 — Minimum decisions recorded**
-- Exit criteria: question content and identity fields written down; access-window and time-limit values recorded; result fields and finalized-result definition agreed; scoring contract owner and delivery route named (contract itself may follow before Phase 8).
+- Exit criteria (schema slice): question content and identity fields written down; question lifecycle rules agreed; API boundary confirmed. This unlocks Phase 2b and Phase 3 — the scoring contract is **not** required.
+- Candidate-flow behaviour is finalized only when HRQ-04, HRQ-08, HRQ-12, and HRQ-17 are recorded; until then it is buildable with configuration but not production-ready.
 - Fallback if an input slips: the renegotiated launch date (HRQ-28) absorbs the delay, or scope drops via the cut lines. Do not invent policy to keep a date.
 
 ### Phase 2a — Safe foundation (no HR input required)
@@ -105,13 +117,14 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 **Gate G2a — Safe foundation ready**
 - **Met 2026-10-28:** git initialized, baseline committed, PostgreSQL switch applied and verified (34 tests / 83 assertions on `assessment_app_test`). No domain code.
 
-### Phase 2b — Domain foundation (requires Gate G1 answers plus D-015 approval)
+### Phase 2b — Domain foundation (requires the schema inputs in G1 plus D-015 approval)
 
 **Owner:** Engineering
 
 - Model the minimum domain: question + question version, M/L response identifiers, invitation (access window, status), attempt (one per invitation, server-side deadline, persisted randomized question order), response, result.
 - Add factories and model tests, including question-version immutability.
 - Disable public candidate registration per D-015 once approved.
+- Not blocked by the scoring contract (D-022); raw-response persistence is independent of scoring.
 
 **Gate G2b — Domain foundation ready**
 - Migrations run cleanly on PostgreSQL from scratch; tests green; no real data.
@@ -137,7 +150,8 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 - Tests: second attempt refused, access window enforced, deadline enforced on direct requests.
 
 **Gate G4 — Attempt lifecycle ready**
-- A second attempt cannot be created by any route; window and deadline are enforced server-side.
+- A second attempt cannot be created by any route; window and deadline are enforced server-side with configured values.
+- Production behaviour (auto-submit, unanswered-question handling, resume) is finalized only after HRQ-04/HRQ-12 are recorded; the mechanism is built, the policy is configured.
 
 ### Phase 5 — Mobile-first candidate assessment UI (M/L)
 
@@ -150,18 +164,20 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 
 **Gate G5 — Candidate flow complete**
 - A candidate can complete the flow on a phone and desktop; refresh preserves answers; submitted data cannot change.
+- Production sign-off of candidate-visible behaviour (timing messages, expiry, resume) waits for HRQ-04/HRQ-12; do not invent those policies.
 
 ### Phase 6 — Office application integration: questions and invitations
 
 **Owner:** Engineering + office team
 
-- Office dashboard calls the question-bank API for HR CRUD and preview.
+- Office dashboard calls the question-bank API for HR CRUD and preview — required MVP outcome (D-023).
 - Office dashboard calls the invitation API and receives candidate links.
-- Pilot fallbacks (engineering-run seeds) documented and removed once the APIs are live.
+- Any temporary seeding helper is documented as a pilot exception and removed once the APIs are live; it is not a substitute for the required question workflow.
 - Tests: authenticated calls only; office app has no database access.
 
 **Gate G6 — HR workflows integrated**
-- In staging, HR can create/edit/archive a question and create an invitation end-to-end through the office dashboard.
+- **Required MVP outcome:** in staging, HR can list, create, edit, preview, and archive questions and create an invitation end-to-end through the office dashboard.
+- A CLI/CSV seeding exception does **not** satisfy this gate; if used, it is recorded, time-boxed, and replaced by the API before production.
 
 ### Phase 7 — Results page with labelled mock data
 
@@ -204,26 +220,27 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 
 ## 4. Critical path
 
-1. Remaining G1 answers (question content HRQ-02, identity HRQ-11) → question and invitation schema.
-2. Question bank + API → office-side question management.
-3. Invitation/attempt lifecycle → candidate flow.
-4. Candidate flow → finalization and result snapshot.
+1. Schema inputs (HRQ-02 question content, HRQ-11 identity, HRQ-33 lifecycle, HRQ-29 boundary) → question and invitation schema.
+2. Question bank + required office-dashboard API → HR question management (MVP outcome, D-023).
+3. Invitation/attempt lifecycle → candidate flow (buildable with configured values; production behaviour waits on HRQ-04/HRQ-12).
+4. Candidate flow → finalization and result snapshot (HRQ-17/HRQ-08 for production shape).
 5. Result snapshot → labelled mock report layout.
-6. Authorized scoring contract (HRQ-32) → real DISC output.
+6. Authorized scoring contract (HRQ-32) → real DISC output (independent track; does not block steps 1–5).
 7. Integration testing and security review → launch.
 
-Question content is now the main dependency: the instrument and response format are settled (D-021), so schema design can start as soon as HRQ-02 and HRQ-11 land. Scoring is deliberately off the critical path until HRQ-32 arrives; the report ships with labelled mock data in the meantime.
+Question content is the main schema dependency: the instrument and response format are settled (D-021), so schema design starts as soon as HRQ-02, HRQ-11, HRQ-33, and the API boundary land. The scoring contract gates only Phase 8; the report ships with labelled mock data in the meantime (D-022).
 
 ## 5. Cut lines (in order)
 
 If the schedule slips, cut in this order:
 
-1. **Live integrations** (question-bank API, invitation lifecycle API, result handoff API) → engineering-run Artisan/CSV seeds for questions and invitations, plus the conditional CSV/JSON result export (D-009; only with HR approval per HRQ-08/HRQ-30).
-2. **Mock results page** → a plain finalization summary without the DISC report layout, still clearly labelled.
-3. **Automated invitation email** → manual link distribution.
-4. **Per-role/multiple question sets** → one complete set for all candidates (question-order randomization remains, D-020).
-5. **Authorized scoring** → raw M/L responses and finalized raw result (D-022; never an invented score).
-6. **UI polish** → functional, accessible-enough screens.
+1. **Result handoff API and invitation lifecycle API** → conditional CSV/JSON export (D-009; only with HR approval per HRQ-08/HRQ-30) plus engineering-run invitation seeds as a pilot fallback (D-018).
+2. **Question-bank integration is not a default cut.** It is a required MVP outcome (D-023). If office-side delivery cannot make the date, only an explicitly sponsor-approved, time-boxed CLI/CSV seeding exception may substitute; record it in `DECISIONS.md` and `HR_OPEN_QUESTIONS.md`, and remove it once the API ships. It does not satisfy the intended HR workflow and must never become the production design.
+3. **Mock results page** → a plain finalization summary without the DISC report layout, still clearly labelled.
+4. **Automated invitation email** → manual link distribution.
+5. **Per-role/multiple question sets** → one complete set for all candidates (question-order randomization remains, D-020).
+6. **Authorized scoring** → raw M/L responses and finalized raw result (D-022; never an invented score).
+7. **UI polish** → functional, accessible-enough screens.
 
 **Never cut:** HTTPS, access control, consent, submission integrity, immutable finalized results, question versioning, attempt/access-window enforcement, backups, audit timestamps, access-control tests, or accurate documentation. The time limit and one-attempt rule are confirmed requirements and are not cuttable; only their *configuration* is adjustable.
 
@@ -242,7 +259,7 @@ If the schedule slips, cut in this order:
 
 | Risk | Effect | Response |
 | --- | --- | --- |
-| Remaining G1 answers late (question content, identity, result fields) | No reliable build | Enforce G1; descope or renegotiate date. |
+| Remaining schema answers late (question content, identity, question lifecycle) | No reliable build | Enforce G1 for the schema slice; descope or renegotiate date. |
 | Authorized scoring specification never supplied | Report cannot show real DISC output | Ship labelled mock layout and raw results; do not invent scores; escalate HRQ-32. |
 | Question edits after use change historical meaning | Corrupted results | Enforce versioning/locking (D-024); tests for immutability. |
 | Instrument requires fixed item order that conflicts with confirmed randomization | Presentation change or approval delay | Validate with HR before content import (HRQ-31); any exception needs explicit approval. |
