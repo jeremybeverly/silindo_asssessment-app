@@ -20,7 +20,8 @@ Consequences:
 - No domain schema, model, migration, route, or candidate UI work is authorised yet.
 - The scoring contract (HRQ-32) is **not** part of G1 and does not block schema or capture work (D-022).
 - Safe work available now: documentation, design artifacts, and non-domain tooling. There is no domain slice that can start without at least HRQ-02 and HRQ-33.
-- **Office-dashboard integration review: BLOCKED — separate repository not available in this workspace** (§5). Independent assessment-app discovery is unaffected, but no cross-repository integration claim can be verified.
+- **Office-dashboard review: COMPLETE (read-only, 2026-10-29)** — the app is accessible, Laravel 12 with Sanctum APIs and HRD role gates, but has **no outbound HTTP client and no assessment/invitation features** (§5). Repository separation needs fixing before either app is committed.
+- **Integration approach:** proposed as an additive, flag-gated client module in the dashboard, with the assessment app as provider (§5).
 
 Two environment observations need attention before implementation (details in §4): the local `.env` currently points the application at the **test** database, and there is **no API authentication package** installed.
 
@@ -80,54 +81,65 @@ Read-only inspection on 2026-10-29.
 
 ## 5. Office-dashboard findings
 
-**Status: BLOCKED — separate repository not available in this workspace.**
+**Status: ACCESSIBLE — inspected read-only 2026-10-29** at `/home/jeremybeverly/Documents/Internship/personal/employee-dashboard`.
 
-**Reason:** the assessment application and the office dashboard are maintained in **separate Git repositories and directories**. Only the assessment application is present in this workspace; no repository path, workspace entry, or project document points to the office dashboard. No filesystem-wide search was performed, no clone was attempted, and no production system was contacted.
+**Repository caveat (verified):** the Git root is the shared parent `…/personal` (remote `arilVINN/dashboardKaryawan`, HEAD `9408996`), into which `.git` was moved. The office app content matches that commit exactly, but the assessment app sits inside the same working tree as an **untracked** directory (`?? assessment-app/`), and two former root files show as deleted (`README.md`, `kadiv.blade.php`). A `git add -A` there would commit the assessment app into the office repository. Treat repository separation as a prerequisite, not a formality.
 
 ### Verified in the office repository
 
-**Nothing.** No implementation detail of the office dashboard has been verified. It must not be inferred from the assessment app or from older notes.
+| Area | Verified fact |
+| --- | --- |
+| Stack | Laravel **12**, PHP `^8.2`; Sanctum **4.3**, Livewire **4.4**; Filament 5 installed but unused (no `app/Filament`, no config); PHPUnit 11.5, Pint 1.24 |
+| Authentication | One `AuthController::login` serves both modes: session cookie for Blade (`web` guard) and Sanctum bearer token for `/api` (`createToken('auth_token')`). Auth user is `App\Models\User2` on `users2` (string PK), not the stock `User` |
+| Authorization | Custom middleware only: `role:` middleware for `staff` / `kadiv` / `hrd` / `direksi` / `pemimpin`, `deny.superadmin`, throttle aliases. `direksi`/`pemimpin` inherit HRD/Kadiv access. No policies, gates, or permission package |
+| API surface | `routes/api.php` (56 routes) under `auth:sanctum` + `gateway.throttle:60,1`, then `role:*` prefixes (`/api/hrd/...`, `/api/kadiv/...`, `/api/staff/...`). **No API versioning** |
+| Response format | `ApiResponseFormatter` produces `{success, code, message, data}` for `api/*`, plus a custom exception renderer |
+| Outbound HTTP | **None.** No `Http::`/Guzzle usage in `app/`, no `app/Services/`, no service classes wrapping external APIs — the dashboard has never called another system |
+| Assessment features | **None.** No assessment/invitation/result code, routes, or tables; 28 migrations cover roles, users2, karyawans, divisis, tugas, submit_tugas, pesans, notifikasis, sessions, cache, jobs, tokens |
+| Integration point | HRD sidebar `resources/views/component_hrd/sidebar.blade.php` (Dashboard / Karyawan / Manajemen Divisi / Pesan). Super-admins render the direksi sidebar instead, so both variants need the link |
+| Environment | Local `.env` uses `pgsql`; `.env.example` and `phpunit.xml` use `sqlite` (`:memory:` for tests). Sessions/cache/queue are database-backed |
+| Tests / CI | ~40 test files, `composer test`; **no CI workflow**, no lint/static-analysis script, no Docker or deploy config |
+| Own docs | `docs/integration-investigation-report.md` (untracked), `docs/api-testing-guide.md`, `docs/kadiv-api.md`, Postman collection |
 
-### Documented but not verified (treat as assumptions)
+### Still unverified (external, not inferable from code)
 
-| Item | Source | Status |
+1. Whether the office team can build and ship the client calls, and by when (**HRQ-29** — framework capability is proven; commitment is not).
+2. Which auth mechanism the office app will use toward the assessment API (**HRQ-14**).
+3. Payload, idempotency, and retry rules (**HRQ-15**).
+4. Environments, base URLs, allowlists, and cross-repo test coordination (**HRQ-16**).
+5. Whether invitation integration is a production-launch requirement (**HRQ-09**).
+6. Whether existing infrastructure can reach the assessment app over the network.
+
+### Proposed integration approach (risk-isolated, additive)
+
+Principle: the assessment app is the **provider**; the dashboard is a **consumer** with a new, flag-gated client module. The dashboard only receives **new files** plus new route entries inside its existing `auth` + `role:hrd` group. No existing controller, model, migration, layout, or auth path is edited, so the integration can be switched off without rollback.
+
+| Phase | Work | Where |
 | --- | --- | --- |
-| The office dashboard is a Laravel + PostgreSQL application | `PROJECT_BRIEF.md` C-05 | Documented only — not observed |
-| HR reviews results there; the question-bank UI and invitation creation belong there | D-003, D-018, D-023 | Confirmed **product boundary**, not observed implementation |
-| The office application can add/consume authenticated API calls | D-004, HRQ-29 | **Unverified capability** |
-| The two applications use separate databases with no direct access | D-002, D-004 | Confirmed **design constraint**, not observed |
+| 0 — Prerequisites | Separate the repositories (own clone or ignore the assessment app), record a baseline test run, work on a branch | Office repo setup only |
+| 1 — Contract and API | Define the contract (questions, invitations, results); build `/api/v1`, token auth, validation, tests | Assessment app only |
+| 2 — Client module | `config/assessment.php`, `App\Services\Assessment\AssessmentClient` (single `Http::withToken()->timeout()->retry()` wrapper), thin HRD controller(s), new views, one sidebar link, `Http::fake()` tests | New files in the dashboard |
+| 3 — Staging rollout | Issue a scoped token per environment, verify HRD and direksi visibility, enable the feature flag | Both, staging only |
 
-### Explicitly unverified (external integration questions)
-
-1. How the office application authenticates HRD users and authorises invitation creation.
-2. How it will authenticate requests to the assessment API (token, signed request, mTLS, other).
-3. Where and how it will call the assessment API (server-side controller/service, job, scheduled sync).
-4. How invitation links and assessment results will be returned to and displayed in the office UI.
-5. Whether invitation or result-handoff functionality already exists there.
-6. How local environments and tests will coordinate across the two repositories.
-
-### Minimum information or access to unblock
-
-1. Read-only repository access (or an export) with the exact path, branch, and commit inspected.
-2. Laravel/PHP version and database configuration.
-3. The HR user authentication and role/permission model, and how a machine caller would be authorised.
-4. Existing API routes, middleware, and any API-client pattern already in use.
-5. Dashboard structure and the natural integration points for question management, invitation creation, and result review.
-6. Confirmation of any pre-existing invitation, assessment, or result-handoff feature.
-7. Environment configuration, secrets handling, network/allowlist constraints, and test conventions.
-8. HRQ-29 confirmation that the office team can build and ship the calls, and by when.
+Non-negotiable properties:
+- **Feature flag defaults to off** — no routes registered and no menu item rendered when disabled; behaviour identical to today.
+- **No dashboard schema changes** — results remain owned by the assessment app, read on demand or linked out.
+- **Failure isolation** — short timeout, explicit "service unavailable" state on the new pages only; existing HRD pages unaffected.
+- **Office-initiated only** — the dashboard calls the assessment API with a scoped token, avoiding outbound calls from the assessment app. Note: the assessment app has **no Sanctum/Passport yet**; that dependency is an assessment-side decision.
+- **No secrets in code** — base URL and token in `.env`; placeholders only in `.env.example`.
+- **Result display** — start with link-out or a thin read-only page; do not write results into the dashboard database.
 
 ### Integration decisions that remain provisional
 
 | Decision | Why provisional | Unblocks with |
 | --- | --- | --- |
-| Authentication mechanism between applications (HRQ-14) | No evidence of the office client's capabilities | Office repo review + HRQ-14/HRQ-29 |
-| Direction and endpoint ownership — push vs pull (HRQ-14) | Unknown existing API conventions | Office repo review |
-| Payload shape and idempotency/retry rules (HRQ-15) | Contract does not exist | Office repo review + HR agreement |
-| Invitation-link handoff into the office UI | Unknown UI and data flow | Office repo review + HRQ-09/HRQ-10 |
-| Result display and field mapping (HRQ-08) | Unknown review screen | Office repo review + HRQ-08 |
-| Environment, base URLs, allowlists, test coordination (HRQ-16) | Unknown infrastructure | Office repo review + ops |
-| Whether invitation integration is a launch requirement (HRQ-09) | Sponsor/HR decision, not a repository fact | Sponsor decision (independent of access) |
+| Auth mechanism between applications (HRQ-14) | No outbound client exists; assessment side has no token package yet | HRQ-14 + assessment-side auth decision |
+| Direction and endpoint ownership (HRQ-14) | Office-initiated is Proposed, not agreed | HRQ-14/HRQ-29 |
+| Payload shape and idempotency/retry (HRQ-15) | Contract does not exist | Contract review + HR agreement |
+| Invitation-link handoff into the office UI | UI placement agreed in principle (HRD sidebar) but not specified | HRQ-09/HRQ-10 |
+| Result display and field mapping (HRQ-08) | No review screen exists yet | HRQ-08 + layout choice |
+| Environment, base URLs, allowlists, test coordination (HRQ-16) | No CI in office repo; test DBs differ | Ops + both teams |
+| Whether invitation integration is a launch requirement (HRQ-09) | Sponsor/HR decision, not a repository fact | Sponsor decision |
 
 ## 6. Proposed domain-model outline (discovery only — no migrations)
 
@@ -163,7 +175,7 @@ Derived only from confirmed requirements (D-005, D-019, D-020, D-021, D-023, D-0
 | 2 | Question-bank domain + authenticated API (Phase 3) | Slice 1; auth mechanism decision; HRQ-33 for lifecycle | **No** |
 | 3 | Invitation and attempt lifecycle (Phase 4) | Slice 1; HRQ-04 values for production behaviour | **No** |
 | 4 | Mobile-first candidate UI (Phase 5) | Slices 2–3; HRQ-04/HRQ-12 for production sign-off | **No** |
-| 5 | Office-dashboard integration (Phase 6) | Office repository access + HRQ-29 capability, contract, auth, environments; HRQ-09 for launch status | **No — BLOCKED (repo unavailable)** |
+| 5 | Office-dashboard integration (Phase 6) | Repository separation fixed; HRQ-29 capability/timeline, HRQ-14/15/16 contract and auth, HRQ-09 launch status | **No** (assessment API may be built first) |
 | 6 | Report layout with labelled mock data (Phase 7) | Slices 1–3; HRQ-08 for final shape | **No** |
 | 7 | Authorized scoring (Phase 8) | HRQ-32 | **No** |
 | 8 | Integration testing, security, deployment (Phase 9) | All above; HRQ-22/24/27 | **No** |
@@ -190,19 +202,19 @@ Only documentation, design, and tooling work is unblocked today.
 4. Confirm D-015 (disable public candidate registration) before launch work.
 
 **To the office-app team**
-1. Read-only repository access (path, branch, commit) so the integration review can be unblocked.
-2. HRQ-29 — can you build/consume the question-bank, invitation, and result APIs; on what timeline?
-3. Preferred auth mechanism, endpoint ownership, and environments/allowlists (HRQ-14/HRQ-15/HRQ-16).
-4. Where question management, invitation creation, and result review would live in the existing dashboard.
-5. Confirmation that no existing invitation/assessment feature already covers this.
+1. HRQ-29 — can you build/ship the question-bank, invitation, and result API calls; on what timeline and on which branch?
+2. Preferred auth mechanism and token storage/rotation, plus environments and allowlists (HRQ-14/HRQ-15/HRQ-16).
+3. Confirm the HRD sidebar as the integration point (and whether direksi needs the same read-only view).
+4. Confirmation that no existing invitation/assessment feature already covers this.
+5. A baseline test run and a feature branch, so the additive module can be reviewed in isolation.
 
 ## 9. Next actions and first-slice acceptance criteria
 
 **Immediate (no HR decision needed)**
 1. Send the question set in §8 and record answers in `HR_OPEN_QUESTIONS.md` as they arrive.
 2. Point the local `.env` back to `assessment_app` so development and tests do not share a database (owner action; not performed here).
-3. Decide the API authentication mechanism (D-013 extension) and approve any dependency.
-4. Request read-only office-dashboard repository access; integration decisions stay provisional until it is reviewed (§5).
+3. Decide the API authentication mechanism (D-013 extension) and approve any dependency; the assessment app currently has no token package.
+4. Fix repository separation before any dashboard work: give `employee-dashboard` its own clone (or ignore `assessment-app/` in the office repo's working tree), and record a baseline office test run.
 5. Keep the domain outline in §6 as a design artifact; do not create migrations.
 
 **Recommended first domain slice once G1 passes:** **question-bank domain + authenticated API** (Phase 3). It has the smallest surface area, is required for the MVP (D-023), and unblocks the office dashboard and all content-dependent work.
