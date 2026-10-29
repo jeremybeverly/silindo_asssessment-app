@@ -20,7 +20,7 @@ Consequences:
 - No domain schema, model, migration, route, or candidate UI work is authorised yet.
 - The scoring contract (HRQ-32) is **not** part of G1 and does not block schema or capture work (D-022).
 - Safe work available now: documentation, design artifacts, and non-domain tooling. There is no domain slice that can start without at least HRQ-02 and HRQ-33.
-- **Office-dashboard review: COMPLETE (read-only, 2026-10-29)** — the app is accessible, Laravel 12 with Sanctum APIs and HRD role gates, but has **no outbound HTTP client and no assessment/invitation features** (§5). Repository separation needs fixing before either app is committed.
+- **Office-dashboard review: COMPLETE (read-only, 2026-10-29)** — the app is accessible via a clean clone at `…/Internship/office`, Laravel 12 with Sanctum APIs and HRD role gates, but has **no outbound HTTP client and no assessment/invitation features** (§5).
 - **Integration approach:** proposed as an additive, flag-gated client module in the dashboard, with the assessment app as provider (D-025, Proposed; §5).
 
 Two environment observations need attention before implementation (details in §4): the local `.env` currently points the application at the **test** database, and there is **no API authentication package** installed.
@@ -81,9 +81,9 @@ Read-only inspection on 2026-10-29.
 
 ## 5. Office-dashboard findings
 
-**Status: ACCESSIBLE — inspected read-only 2026-10-29** at `/home/jeremybeverly/Documents/Internship/personal/employee-dashboard`.
+**Status: ACCESSIBLE — inspected read-only 2026-10-29** at `…/Internship/office` (repo root; application in `office/employee-dashboard`), commit `7636da3`.
 
-**Repository caveat (verified):** the Git root is the shared parent `…/personal` (remote `arilVINN/dashboardKaryawan`, HEAD `9408996`), into which `.git` was moved. The office app content matches that commit exactly, but the assessment app sits inside the same working tree as an **untracked** directory (`?? assessment-app/`), and two former root files show as deleted (`README.md`, `kadiv.blade.php`). A `git add -A` there would commit the assessment app into the office repository. Treat repository separation as a prerequisite, not a formality.
+**Repository layout (verified):** the canonical working copy is a clean clone of `dashboardKaryawan` at `…/Internship/office`. An earlier copy inside `…/personal` shares a working tree with the assessment app; it is scratch only and must never be committed from (the assessment app is now excluded locally). Reference clone is clean.
 
 ### Verified in the office repository
 
@@ -92,7 +92,7 @@ Read-only inspection on 2026-10-29.
 | Stack | Laravel **12**, PHP `^8.2`; Sanctum **4.3**, Livewire **4.4**; Filament 5 installed but unused (no `app/Filament`, no config); PHPUnit 11.5, Pint 1.24 |
 | Authentication | One `AuthController::login` serves both modes: session cookie for Blade (`web` guard) and Sanctum bearer token for `/api` (`createToken('auth_token')`). Auth user is `App\Models\User2` on `users2` (string PK), not the stock `User` |
 | Authorization | Custom middleware only: `role:` middleware for `staff` / `kadiv` / `hrd` / `direksi` / `pemimpin`, `deny.superadmin`, throttle aliases. `direksi`/`pemimpin` inherit HRD/Kadiv access. No policies, gates, or permission package |
-| API surface | `routes/api.php` (56 routes) under `auth:sanctum` + `gateway.throttle:60,1`, then `role:*` prefixes (`/api/hrd/...`, `/api/kadiv/...`, `/api/staff/...`). **No API versioning** |
+| API surface | `routes/api.php` (64 routes) under `auth:sanctum` + `gateway.throttle:60,1`, then `role:*` prefixes (`/api/hrd/...`, `/api/kadiv/...`, `/api/staff/...`). **No API versioning** |
 | Response format | `ApiResponseFormatter` produces `{success, code, message, data}` for `api/*`, plus a custom exception renderer |
 | Outbound HTTP | **None.** No `Http::`/Guzzle usage in `app/`, no `app/Services/`, no service classes wrapping external APIs — the dashboard has never called another system |
 | Assessment features | **None.** No assessment/invitation/result code, routes, or tables; 28 migrations cover roles, users2, karyawans, divisis, tugas, submit_tugas, pesans, notifikasis, sessions, cache, jobs, tokens |
@@ -185,7 +185,7 @@ Derived only from confirmed requirements (D-005, D-019, D-020, D-021, D-023, D-0
 | 2 | Question-bank domain + authenticated API (Phase 3) | Slice 1; auth mechanism decision; HRQ-33 for lifecycle | **No** |
 | 3 | Invitation and attempt lifecycle (Phase 4) | Slice 1; HRQ-04 values for production behaviour | **No** |
 | 4 | Mobile-first candidate UI (Phase 5) | Slices 2–3; HRQ-04/HRQ-12 for production sign-off | **No** |
-| 5 | Office-dashboard integration (Phase 6) | Repository separation fixed; HRQ-29 capability/timeline, HRQ-14/15/16 contract and auth, HRQ-09 launch status | **No** (assessment API may be built first) |
+| 5 | Office-dashboard integration (Phase 6) | HRQ-29 capability/timeline, HRQ-14/15/16 contract and auth, HRQ-09 launch status (repository separation now resolved) | **No** (assessment API may be built first) |
 | 6 | Report layout with labelled mock data (Phase 7) | Slices 1–3; HRQ-08 for final shape | **No** |
 | 7 | Authorized scoring (Phase 8) | HRQ-32 | **No** |
 | 8 | Integration testing, security, deployment (Phase 9) | All above; HRQ-22/24/27 | **No** |
@@ -224,7 +224,7 @@ Only documentation, design, and tooling work is unblocked today.
 1. Send the question set in §8 and record answers in `HR_OPEN_QUESTIONS.md` as they arrive.
 2. Point the local `.env` back to `assessment_app` so development and tests do not share a database (owner action; not performed here).
 3. Decide the API authentication mechanism (D-013 extension) and approve any dependency; the assessment app currently has no token package.
-4. Fix repository separation before any dashboard work: give `employee-dashboard` its own clone (or ignore `assessment-app/` in the office repo's working tree), and record a baseline office test run.
+4. Repository separation is resolved: use the clean clone at `…/Internship/office` for dashboard work; the copy inside `…/personal` is scratch only and must not be committed from. Record a baseline office test run before the first integration branch.
 5. Keep the domain outline in §6 as a design artifact; do not create migrations.
 
 **Recommended first domain slice once G1 passes:** **question-bank domain + authenticated API** (Phase 3). It has the smallest surface area, is required for the MVP (D-023), and unblocks the office dashboard and all content-dependent work.
