@@ -26,6 +26,7 @@ Source: project brief supplied by the project owner on 2026-10-28, plus reposito
 | C-14 | The candidate-facing experience must be **mobile-first**. | Confirmed. Candidates are expected to take the assessment on phones. |
 | C-15 | HR's scoring rules are **confidential** and have not been provided to the developer. | Confirmed (D-022). Scoring, DISC mapping, and interpretation must not be invented. |
 | C-16 | The application is delivered in **Indonesian**: UI copy, validation messages, and emails; formal **Anda**; M/L labels translated while keeping Most/Least meanings. | Confirmed (D-026). Exact M/L wording Pending HR. Additional languages Deferred. |
+| C-17 | An invitation identifies the candidate by **name, email, phone number, and position applied**. | Confirmed (D-027). Email is not unique; phone is normalised; the position is a snapshot of an office-owned list; no verification assumed. |
 
 Beyond these, the MVP path and boundaries (D-016), invitation-only access (D-005), and randomized question order (D-020) are confirmed. No candidate identity field, result schema, scoring implementation, or deployment target has been agreed.
 
@@ -36,8 +37,8 @@ These remain proposals where marked. The MVP path and system boundaries were con
 | ID | Requirement | Status | Depends on / notes |
 | --- | --- | --- | --- |
 | FR-01 | A candidate enters through a unique, high-entropy invitation link. The app validates existence, status, and access window, and shows a generic error for invalid links. | Confirmed (approach) | D-005, D-019; details Pending HRQ-04, HRQ-09, HRQ-10, HRQ-12 |
-| FR-02 | The invitation carries the candidate's identifying and reference data supplied by HR; candidates do not create accounts or self-register. | Confirmed (approach) | D-005; fields Pending HRQ-11 |
-| FR-03 | Before starting, the candidate sees HR-approved instructions and consent text, and must acknowledge them. The acknowledgement timestamp and text version are stored. Acknowledgement alone is not legal consent; launch requires approved wording (HRQ-19). | Proposed | HRQ-19; text Pending |
+| FR-02 | The invitation carries the candidate's name, email, phone number, and position applied, supplied by HR; candidates do not create accounts or self-register. | Confirmed (approach) | D-005, D-027; no verification assumed |
+| FR-03 | Before starting, the candidate sees HR-approved instructions and consent text, and must acknowledge them. The acknowledgement timestamp and text version are stored. Acknowledgement alone is not legal consent; launch requires approved wording (HRQ-19). | Proposed | HRQ-19; text Pending; must cover phone/email processing |
 | FR-04 | Starting creates one attempt linked to the invitation, with server-side timestamps and states such as `in_progress`, `submitted`, `expired`, `voided`. **One attempt per invitation**: a second attempt is prohibited after submission or expiry unless an approved retake policy says otherwise. | Confirmed | D-019; state names illustrative; retake/reset Pending HRQ-12 |
 | FR-05 | Every candidate receives the complete question set from a versioned assessment definition — no subset selection. Each question is one statement; the candidate picks exactly one of **M (Most)** or **L (Least)** for that statement. Question order is randomized per attempt and persisted so refresh/resume does not reshuffle. M/L labels keep fixed meanings and are never reordered or swapped. | Confirmed | D-020, D-021; instrument constraints to validate (HRQ-31) |
 | FR-06 | Answers are saved server-side as the candidate progresses, so an interrupted attempt can continue without losing responses. Resuming the same attempt after refresh or browser closure is **Proposed** pending HR confirmation. | Proposed | Autosave required; resume policy Pending HRQ-12; must not rely on browser storage alone |
@@ -66,7 +67,7 @@ These remain proposals where marked. The MVP path and system boundaries were con
 | NFR-03 | Invitation tokens are unguessable, time-limited, and stored hashed; access checks are server-side. | Proposed | Do not put sensitive data in URLs beyond the token. |
 | NFR-04 | Candidate A cannot read or modify candidate B's attempt, responses, or result. | Proposed | Requires explicit tests. |
 | NFR-05 | Submission and result export are transactional and safe to retry. | Proposed | Use idempotency keys for API handoff. |
-| NFR-06 | Candidate identity data is minimized and logged only where necessary. | Proposed | Field list Pending (HRQ-11). |
+| NFR-06 | Candidate identity data (name, email, phone) is minimized and logged only where necessary; phone numbers never appear in logs. | Proposed | D-027; field list confirmed |
 | NFR-07 | Retention and deletion follow HR policy once confirmed; no default retention period is assumed. | Pending | HRQ-18; legal/consent HRQ-19. |
 | NFR-08 | Timestamps are stored in UTC and displayed consistently. | Proposed | Confirm HR reporting timezone. |
 | NFR-09 | The application has a documented backup/restore process before launch. | Pending | Depends on deployment (HRQ-22). |

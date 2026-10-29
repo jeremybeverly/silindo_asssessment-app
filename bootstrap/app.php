@@ -49,7 +49,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 'success' => false,
                 'code' => $status,
                 'message' => $message,
-                'data' => null,
+                // Surface field errors so the dashboard can show them.
+                'data' => $e instanceof ValidationException ? $e->errors() : null,
             ], $status);
         });
     })->create();

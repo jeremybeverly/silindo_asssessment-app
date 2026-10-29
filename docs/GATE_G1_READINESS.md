@@ -7,18 +7,18 @@ Status labels: **Confirmed**, **Proposed**, **Pending**, **Deferred**.
 
 ## 1. Executive summary
 
-**Gate G1 has NOT passed.** Two of the three documented schema exit criteria remain unmet; the question-lifecycle criterion is now met:
+**Gate G1 schema inputs are satisfied (2026-10-29).** Content remains a data-entry task, not a schema gate.
 
 | G1 exit criterion (`ROADMAP.md`) | Status |
 | --- | --- |
-| Question content written down | **Not met** — HRQ-02 content (wording, count, language, source file) outstanding. Now treated as data entry through the question CRUD, not a schema blocker |
-| Candidate identity fields written down | **Not met** — HRQ-11 unanswered |
-| Question lifecycle rules agreed | **Met (2026-10-29)** — D-024 recorded: version-on-edit, newest for new attempts, started versions kept, archive replaces delete |
+| Question content written down | **Data entry outstanding** — HR enters statements through the question API; schema does not depend on them |
+| Candidate identity fields written down | **Met (2026-10-29)** — name, email, phone, position (D-027) |
+| Question lifecycle rules agreed | **Met (2026-10-29)** — D-024: version-on-edit, newest for new attempts, started versions kept, archive replaces delete |
 | API boundary confirmed | **Met for the architectural boundary** (D-004, D-023: authenticated API only, no shared database); office-side **capability** is unverified (HRQ-29) |
 
 Consequences:
-- The **question-bank subset** (questions, versions, question API) may proceed: format is confirmed (D-021), lifecycle is confirmed (D-024), and HR enters content through the CRUD. It has started on branch `feat/question-bank`.
-- **Invitation, attempt, and result schema** remain blocked on **HRQ-11**.
+- **Question bank and invitation/attempt slices may proceed.** Questions, versions, invitations and attempts are implemented on feature branches.
+- **Candidate UI and result delivery** remain next; office-side capability (HRQ-29) and scoring (HRQ-32) stay separate gates.
 - The scoring contract (HRQ-32) is **not** part of G1 and does not block schema or capture work (D-022).
 - **Office-dashboard review: COMPLETE (read-only, 2026-10-29)** — the app is accessible via a clean clone at `…/Internship/office`, Laravel 12 with Sanctum APIs and HRD role gates, but has **no outbound HTTP client and no assessment/invitation features** (§5).
 - **Integration approach:** proposed as an additive, flag-gated client module in the dashboard, with the assessment app as provider (D-025, Proposed; §5).
@@ -30,7 +30,7 @@ Two environment observations need attention before implementation (details in §
 | Input | Status | Evidence | Still missing | Blocked slice | Safe meanwhile |
 | --- | --- | --- | --- | --- | --- |
 | **HRQ-02** Question bank content | **P0 — Partially answered** | Response log 2026-10-29: one shared bank, one statement per question, exactly one M/L (D-021). Response log explicitly lists wording, count, and source file as outstanding. | Statement wording, total count, language(s), source format/file, any presentation constraints (HRQ-31) | Question schema/seeding, question-bank API payloads, candidate rendering, deterministic test fixtures | Model the *shape* (statement + M/L) in a design doc only; no migration |
-| **HRQ-11** Candidate identity fields | **P0 — Unanswered** | No response-log entry; "No default. Stop." | Which fields (name, email, reference ID, position, department), verification, duplicate handling | Invitation table columns, attempt/result linkage, duplicate prevention, export identity | Nothing domain-specific; do not add identity columns |
+| **HRQ-11** Candidate identity fields | **Answered 2026-10-29 (project owner)** | Response log + D-027: name, email, phone (as entered + normalised), position snapshot; email non-unique; no verification | None for schema | — | — |
 | **HRQ-33** Question lifecycle/versioning rules | **Answered 2026-10-29 (project owner)** | Response log + D-024: edits append a version; newest version used for new attempts; started versions kept until completion; archive replaces delete | Cleanup timing only (retention, HRQ-18) | Nothing in the question slice | — |
 | **HRQ-29** API boundary and office capability | **P1 — Partially answered (boundary), capability unverified** | D-004: authenticated server-to-server API only, no direct DB access. D-023: office app manages questions via this API; assessment app owns data/rules. No evidence the office app can add or consume these calls | Office-side capability, timeline, auth mechanism, endpoint ownership, environments | Office-dashboard integration (Phase 6); final API contract/auth for Phase 3 | Build local API behind a stable interface once schema is approved; do not assume the office app can call it |
 

@@ -56,6 +56,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | D-024 | Question versioning protects historical attempts | Confirmed (2026-10-29) |
 | D-025 | Integration approach: provider/consumer with additive, flag-gated seams | Proposed |
 | D-026 | Indonesian-only candidate experience | Confirmed (2026-10-29); label wording Pending HR |
+| D-027 | Candidate identity and position snapshot | Confirmed (2026-10-29) |
 
 ## D-001: Separate candidate-facing application
 
@@ -393,6 +394,22 @@ This log records project and technical decisions. HR policy decisions are owned 
   - Additional languages are **Deferred**.
 - **Impact:** Locale configuration, `lang/id` translation files, date/number formatting, and every candidate screen must be Indonesian from the start. Tests assert the locale and translated validation messages.
 - **Review trigger:** HR approves the M/L wording; any request for a second language.
+
+## D-027: Candidate identity and position snapshot
+
+- **Status:** Confirmed (2026-10-29)
+- **Date:** 2026-10-29
+- **Owner:** Project owner + HR
+- **Context:** HRQ-11 answered on 2026-10-29. Invitations need enough candidate data for HR to identify the person and match the result, without creating candidate accounts (D-005).
+- **Decision:**
+  - An invitation stores: **candidate name**, **email**, **phone number**, and the **position applied for**.
+  - Email is required but **not unique**. Duplicates are allowed because HR may invite the same person again.
+  - Phone is stored **as entered** plus a **normalised digits-only** value; a leading `0` is converted to `62` (e.g. `0812-3456-7890` → `6281234567890`).
+  - The position is a **snapshot** of the office-owned list (`position_name`, optional `position_external_id`). HR maintains the list in the office dashboard. This app does not own, validate, or query positions, and holds no cross-database reference.
+  - Renaming or deactivating a position never changes existing invitations.
+  - No verification of email or phone is assumed; the data is HR-supplied and unverified.
+- **Impact:** Adds phone to the PII set (keep it out of logs; consent wording must cover it, HRQ-19). The invitation payload from the office dashboard includes the position name/id. No new CRUD surface in this application.
+- **Review trigger:** HRQ-19 (consent/privacy wording); any decision to validate positions against a live office list.
 
 ## Deliberately not decided yet
 

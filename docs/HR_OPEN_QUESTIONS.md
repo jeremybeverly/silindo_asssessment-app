@@ -20,7 +20,7 @@ This register lists decisions owned by HR, the project sponsor, or the office ap
 
 ## Minimum decision set
 
-**To start domain/schema work** (the scoring contract is **not** required): HRQ-02 (question content), HRQ-11 (identity fields), HRQ-33 (question lifecycle rules), and the HRQ-29 API boundary.
+**To start domain/schema work** (the scoring contract is **not** required): question format (confirmed, D-021) and lifecycle (confirmed, D-024), candidate identity fields (confirmed, D-027), and the HRQ-29 API boundary. HR enters the actual question content through the API, so content is no longer a schema gate.
 
 **To finalize candidate-flow behaviour for production:** HRQ-04 (access-window/time-limit values, expiry handling), HRQ-12 (resume/reset), HRQ-17 (finalization), HRQ-08 (result fields). The flow can be built with configuration before these land; it cannot be signed off.
 
@@ -55,7 +55,7 @@ The interim G1 target is **2026-10-29 12:00**. With the launch date under renego
 | --- | --- | --- | --- | --- | --- |
 | HRQ-09 | D-018 confirms the intended workflow — HR creates invitations in the office dashboard. (a) Can the office application support that, and when? (b) Is it required for production launch, or may an explicitly approved, time-boxed pilot fallback serve the initial launch? (c) If a fallback is allowed, what is its time limit and replacement plan? | Determines the integration contract, the production launch gate, and the operating procedure. | **P0** (invitation-integration slice only; schema/domain work proceeds without it) | Workflow is confirmed; capability (HRQ-29) and the production-launch requirement are not. No fallback is approved by default. | HR + office app team |
 | HRQ-10 | How are invitations delivered: a link HR sends manually, email from this app, a shared link, or another channel? | Email adds deliverability, templates, and support scope; manual links are faster. | **P0** | Preferred workflow: HR manually sends the link generated through the office dashboard — **not confirmed**. No automated email assumed; delivery channel Pending. | HR |
-| HRQ-11 | Which candidate identity fields are required (name, email, employee/reference ID, position, department)? What verification is needed? | Privacy, schema, result matching, and duplicate prevention. | **P0** | No default. Stop. | HR + privacy owner |
+| HRQ-11 | Which candidate identity fields are required (name, email, employee/reference ID, position, department)? What verification is needed? | Privacy, schema, result matching, and duplicate prevention. | Answered (2026-10-29) | Answered: name, email, phone, position applied; no verification assumed. See D-027 and the response log. | HR + privacy owner |
 | HRQ-12 | Can a candidate resume an active attempt after closing the browser or losing connectivity? Are retakes, resets, or revocation of an active attempt ever allowed? | Affects attempt states, support workload, and whether resume is a launch requirement. | P1 | One attempt per invitation and a server-enforced time limit are **Confirmed** (D-019). Resume is **Proposed**; retakes, resets, and active-attempt revocation: no default. | HR |
 | HRQ-13 | How does a candidate get help with a broken, expired, or lost link? Who can reissue it? | Defines support ownership and admin capability. | P2 | **Proposed recommendation:** reissue rotates the token — a new token is issued and the old token invalidated (raw tokens are not retained for retrieval; consistent with NFR-03). HR authorization and active-attempt handling stay Pending. | HR |
 
@@ -123,6 +123,7 @@ Record answers here, then update the affected requirements and decisions. Do not
 | HRQ-03 | Partial: every candidate receives the complete question set; question order randomized per attempt. Remaining: multiple complete sets/role-based instruments. | Project owner | 2026-10-28 | D-020, FR-05, ROADMAP |
 | D-019 rules | Invitation access window, assessment time limit, one attempt per invitation confirmed; durations and expiry behaviour outstanding (HRQ-04). Resumption still Proposed (HRQ-12). | HR | 2026-10-29 | D-019, FR-04, FR-07 |
 | HRQ-33 | Editing creates a new version; new attempts use the newest version. An attempt keeps the questions/versions it started with until completion; those versions are not changed or deleted while referenced. Archive replaces delete; cleanup after attempts finish follows retention (HRQ-18). | Project owner | 2026-10-29 | D-024, FR-19 |
+| HRQ-11 | Name, email, phone number, and position applied. Email required but not unique (duplicates allowed when HR re-invites); phone stored as entered plus normalised digits (leading 0 → 62); position is an office-owned snapshot; no verification assumed. | Project owner | 2026-10-29 | D-027, FR-02, C-17 |
 
 ## Rules for interpreting silence
 
