@@ -43,6 +43,7 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 - Instructions and consent acknowledgement, with version and timestamp.
 - One shared question bank; one statement per question; exactly one M (Most) or L (Least) per statement (Confirmed, D-021).
 - **Required MVP outcome:** HR manages the shared question bank from the existing office dashboard through this app's authenticated API (D-023). The office application never writes to the assessment database and holds no question business rules.
+- **Intended invitation workflow:** HR requests invitation creation and manages revocation/status in the office dashboard via this app's API (D-018, confirmed workflow). Whether that integration is an absolute **production launch requirement** is **Pending** sponsor/HR confirmation (HRQ-09); office-side capability is unverified (HRQ-29).
 - Every candidate receives the complete set; question order randomized per attempt and persisted across resume; M/L meanings fixed (Confirmed, D-020).
 - Server-enforced time limit and one-attempt rule (Confirmed existence, D-019; durations Pending HRQ-04).
 - Server-side M/L answer persistence; resumable active attempt (Proposed, D-019).
@@ -54,7 +55,6 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 
 ### Should have (only if time permits)
 
-- Invitation lifecycle API for the office dashboard (D-018; office-side capability Pending HRQ-29). A temporary pilot fallback is acceptable here only.
 - Result handoff API to the office dashboard (D-004).
 - Results-page layout using clearly labelled mock data (D-022, FR-21).
 
@@ -171,13 +171,14 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 **Owner:** Engineering + office team
 
 - Office dashboard calls the question-bank API for HR CRUD and preview — required MVP outcome (D-023).
-- Office dashboard calls the invitation API and receives candidate links.
+- Office dashboard requests invitation creation and receives candidate links — intended workflow (D-018); capability and contract Pending (HRQ-09, HRQ-29).
 - Any temporary seeding helper is documented as a pilot exception and removed once the APIs are live; it is not a substitute for the required question workflow.
 - Tests: authenticated calls only; office app has no database access.
 
 **Gate G6 — HR workflows integrated**
-- **Required MVP outcome:** in staging, HR can list, create, edit, preview, and archive questions and create an invitation end-to-end through the office dashboard.
-- A CLI/CSV seeding exception does **not** satisfy this gate; if used, it is recorded, time-boxed, and replaced by the API before production.
+- **Required MVP outcome:** in staging, HR can list, create, edit, preview, and archive questions through the office dashboard (D-023).
+- **Invitations:** either HR can create an invitation end-to-end through the office dashboard (D-018), or a sponsor/HR-approved, time-boxed pilot exception is recorded with a named replacement plan. A CLI/CSV or engineering-run fallback is temporary, does not satisfy the intended workflow, and is never the production design; it is **not** approved by default (HRQ-09).
+- A CLI/CSV seeding exception does **not** satisfy the question-bank requirement; if used there, it is recorded, time-boxed, and replaced by the API before production.
 
 ### Phase 7 — Results page with labelled mock data
 
@@ -234,7 +235,7 @@ Question content is the main schema dependency: the instrument and response form
 
 If the schedule slips, cut in this order:
 
-1. **Result handoff API and invitation lifecycle API** → conditional CSV/JSON export (D-009; only with HR approval per HRQ-08/HRQ-30) plus engineering-run invitation seeds as a pilot fallback (D-018).
+1. **Result handoff API and invitation lifecycle API** → conditional CSV/JSON export (D-009; only with HR approval per HRQ-08/HRQ-30) plus engineering-run invitation seeding **only** as a sponsor/HR-approved, time-boxed pilot exception with a named replacement plan (HRQ-09); it is not approved by default and never becomes the production design.
 2. **Question-bank integration is not a default cut.** It is a required MVP outcome (D-023). If office-side delivery cannot make the date, only an explicitly sponsor-approved, time-boxed CLI/CSV seeding exception may substitute; record it in `DECISIONS.md` and `HR_OPEN_QUESTIONS.md`, and remove it once the API ships. It does not satisfy the intended HR workflow and must never become the production design.
 3. **Mock results page** → a plain finalization summary without the DISC report layout, still clearly labelled.
 4. **Automated invitation email** → manual link distribution.

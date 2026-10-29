@@ -266,8 +266,8 @@ This log records project and technical decisions. HR policy decisions are owned 
 - **Owner:** Project owner (preference stated 2026-10-28); HR + office application team confirmation of the contract Pending
 - **Context:** HR creates each candidate invitation from the existing office dashboard. The assessment app owns invitation records, tokens, validation, attempts, responses, and finalization. The office application's ability to call new APIs is unverified.
 - **Decision:** The assessment app exposes authenticated endpoints (or an equivalent agreed mechanism) for the office dashboard to request invitation creation and receive the candidate link, plus revocation and status retrieval. Reissue is modelled as revoke-and-replace: a new token is issued and the old token is invalidated; raw tokens are not retained for retrieval. Result handoff remains a separate concern (D-004/D-009). No shared database.
-- **Impact:** Requires office-side development and a contract (HRQ-29, HRQ-15). Until available, the temporary pilot fallback is an engineering-run Artisan command/CSV import (formerly D-010). Supersedes D-010 for invitation creation only.
-- **Amended 2026-10-29:** the workflow is confirmed — HR creates invitations in the office dashboard, which calls this application's API. Only the contract and office-side implementation timeline remain Pending.
+- **Impact:** Requires office-side development and a contract (HRQ-29, HRQ-15). Until available, a pilot fallback (engineering-run Artisan command/CSV import, formerly D-010) may be used **only** with explicit sponsor/HR approval and a time limit; it does not satisfy the intended workflow and must not become the production design. Supersedes D-010 for invitation creation only.
+- **Amended 2026-10-29:** the workflow is confirmed — HR creates invitations in the office dashboard, which calls this application's API. The contract, office-side implementation timeline, and whether this integration is a production launch requirement (HRQ-09) remain Pending.
 - **Review trigger:** HRQ-09, HRQ-29, and HRQ-15; feasibility check with the office application team.
 
 ## D-019: Invitation and attempt semantics
