@@ -37,14 +37,14 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 
 ## Confirmed baseline (verified 2026-10-29)
 
-- Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.1**, Flux UI **2.13**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
+- Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.4.8**, Flux UI **2.21.0**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
 - Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
 - No assessment domain code, routes, or tables exist.
 - The instrument is **DISC**; each question is a single statement answered with exactly one **M (Most)** or **L (Least)**. No paired statements, no A/B/C/D or Likert variants (`D-021`).
 - HR's scoring rules are confidential; no formula, mapping, threshold, or interpretation exists in the repository (`D-022`).
 - Local development and tests run on **PostgreSQL 18.6** (`assessment_app` for the app, `assessment_app_test` for tests); `.env` is gitignored. `.env.example`, `phpunit.xml`, and CI all target PostgreSQL (D-014, Confirmed 2026-10-28).
 - No integration with the office dashboard exists.
-- The repository is a git repository as of 2026-10-28 (branch `main`; initial scaffold/docs commit `4a6bcd5`). No remote or branch protection is configured yet. `AGENTS.md` is versioned; tool-specific agent config (`.codex`, `.pi`, `.zed`, `opencode.json`, `boost.json`) stays ignored by the starter `.gitignore`.
+- The repository is a git repository as of 2026-10-28 (branch `main`; initial scaffold/docs commit `4a6bcd5`). Remote `origin` is configured (GitHub); branch protection is unverified. `AGENTS.md` is versioned; tool-specific agent config (`.codex`, `.pi`, `.zed`, `opencode.json`, `boost.json`) stays ignored by the starter `.gitignore`.
 
 ## Non-negotiable project rules
 
