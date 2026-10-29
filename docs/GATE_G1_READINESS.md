@@ -98,7 +98,8 @@ Read-only inspection on 2026-10-29.
 | Assessment features | **None.** No assessment/invitation/result code, routes, or tables; 28 migrations cover roles, users2, karyawans, divisis, tugas, submit_tugas, pesans, notifikasis, sessions, cache, jobs, tokens |
 | Integration point | HRD sidebar `resources/views/component_hrd/sidebar.blade.php` (Dashboard / Karyawan / Manajemen Divisi / Pesan). Super-admins render the direksi sidebar instead, so both variants need the link |
 | Environment | Local `.env` uses `pgsql`; `.env.example` and `phpunit.xml` use `sqlite` (`:memory:` for tests). Sessions/cache/queue are database-backed |
-| Tests / CI | ~40 test files, `composer test`; **no CI workflow**, no lint/static-analysis script, no Docker or deploy config |
+| Tests / CI | ~40 test files; **baseline 243 passed / 13 failed** at `7636da3` (after `npm run build`); **no CI workflow**, no lint/static-analysis script, no Docker or deploy config. The 13 failures are pre-existing (e.g. `Tugas::isTelat()` undefined) and need triage by the office team |
+| Toolchain | `composer install` fails on PHP **8.5**: `openspout` is locked to a version supporting ≤ 8.4. Inspection used `--ignore-platform-req=php`; the deployed PHP version must be confirmed |
 | Own docs | `docs/integration-investigation-report.md` (untracked), `docs/api-testing-guide.md`, `docs/kadiv-api.md`, Postman collection |
 
 ### Still unverified (external, not inferable from code)
@@ -224,7 +225,7 @@ Only documentation, design, and tooling work is unblocked today.
 1. Send the question set in §8 and record answers in `HR_OPEN_QUESTIONS.md` as they arrive.
 2. Point the local `.env` back to `assessment_app` so development and tests do not share a database (owner action; not performed here).
 3. Decide the API authentication mechanism (D-013 extension) and approve any dependency; the assessment app currently has no token package.
-4. Repository separation is resolved: use the clean clone at `…/Internship/office` for dashboard work; the copy inside `…/personal` is scratch only and must not be committed from. Record a baseline office test run before the first integration branch.
+4. Repository separation is resolved: use the clean clone at `…/Internship/office` for dashboard work; the copy inside `…/personal` is scratch only and must not be committed from. Office baseline recorded: **243 passed / 13 failed** at `7636da3`; the 13 pre-existing failures need triage before integration work.
 5. Keep the domain outline in §6 as a design artifact; do not create migrations.
 
 **Recommended first domain slice once G1 passes:** **question-bank domain + authenticated API** (Phase 3). It has the smallest surface area, is required for the MVP (D-023), and unblocks the office dashboard and all content-dependent work.
