@@ -195,6 +195,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 - **Impact:** Keeps the contract versionable and consistent with Laravel conventions. Final auth mechanism still depends on HRQ-14.
 - **Amended 2026-10-28:** expected to also expose invitation lifecycle endpoints (create, revoke, status) for the office dashboard (D-018); contract Pending.
 - **Amended 2026-10-29:** the same API surface is expected to expose question-bank CRUD endpoints for the office dashboard (D-023). Contract and auth mechanism remain Pending (HRQ-29).
+- **Implementation note 2026-10-29:** the non-domain skeleton is in place on branch `feat/api-v1-skeleton` — `/api/v1` route group, Sanctum token auth (dependency added), shared `{success, code, message, data}` envelope, and feature tests. No domain endpoints or schemas. Auth mechanism toward the office app and the contract itself remain Pending.
 - **Review trigger:** Integration contract agreed.
 
 ## D-014: Switch local development to PostgreSQL before feature work
