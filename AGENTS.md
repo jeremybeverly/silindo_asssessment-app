@@ -5,10 +5,11 @@ Project-wide instructions for any coding agent (OpenCode, Codex, Cursor, Claude,
 ## Project status: decision phase
 
 - The documentation foundation was **approved on 2026-10-28** (Gate G0). The MVP path and system boundaries are confirmed (`docs/DECISIONS.md` D-016).
-- Feature work is still **gated**: the seven P0 questions in `docs/HR_OPEN_QUESTIONS.md` are with HR/sponsor, and the launch date is under renegotiation (`docs/DECISIONS.md` D-017).
-- **Permitted now (safe, non-domain foundation):** git initialization, scaffold inspection, development tooling, PostgreSQL setup planning, and verification of existing starter tests.
-- **Still prohibited:** domain migrations, models, routes, UI, dependencies, or application configuration changes that depend on unresolved requirements (assessment content, invitation API contract, scoring, retention, deployment). These wait for Gate G1 answers or explicit defaults recorded in `docs/DECISIONS.md`.
-- When domain implementation is approved, work in small, tested slices against `docs/REQUIREMENTS.md` and `docs/ROADMAP.md`.
+- HR confirmed the instrument and core flow on **2026-10-29**: DISC framework, one shared question bank, one statement per question with exactly one **M (Most)** or **L (Least)** response, invitation access window, assessment time limit, one attempt per invitation, and a mobile-first candidate experience (`D-019`, `D-021`). HR's scoring rules are **confidential** and not supplied (`D-022`).
+- Domain work is still **gated** on the remaining inputs in `docs/HR_OPEN_QUESTIONS.md`: question content, identity fields, result fields, question lifecycle, access/time-limit values, and the authorized scoring contract. The launch date is under renegotiation (`D-017`).
+- **Permitted now:** documentation work, scaffold inspection, tooling, and tests that do not encode unresolved policy.
+- **Still prohibited:** domain migrations, models, routes, or UI that depend on unresolved requirements; any invented DISC scoring, mapping, threshold, or interpretation; committing real candidate data or secrets. These wait for the named Gate G1 answers, or an explicit decision recorded in `docs/DECISIONS.md`.
+- When a domain slice is approved, work in small, tested slices against `docs/REQUIREMENTS.md` and `docs/ROADMAP.md`.
 
 ## Read before changing anything
 
@@ -31,11 +32,13 @@ Use exactly these labels in documentation and code comments where relevant:
 
 Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` with a date and owner.
 
-## Confirmed baseline (verified 2026-10-28)
+## Confirmed baseline (verified 2026-10-29)
 
 - Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.1**, Flux UI **2.13**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
 - Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
 - No assessment domain code, routes, or tables exist.
+- The instrument is **DISC**; each question is a single statement answered with exactly one **M (Most)** or **L (Least)**. No paired statements, no A/B/C/D or Likert variants (`D-021`).
+- HR's scoring rules are confidential; no formula, mapping, threshold, or interpretation exists in the repository (`D-022`).
 - Local development and tests run on **PostgreSQL 18.6** (`assessment_app` for the app, `assessment_app_test` for tests); `.env` is gitignored. `.env.example`, `phpunit.xml`, and CI all target PostgreSQL (D-014, Confirmed 2026-10-28).
 - No integration with the office dashboard exists.
 - The repository is a git repository as of 2026-10-28 (branch `main`; initial scaffold/docs commit `4a6bcd5`). No remote or branch protection is configured yet. `AGENTS.md` is versioned; tool-specific agent config (`.codex`, `.pi`, `.zed`, `opencode.json`, `boost.json`) stays ignored by the starter `.gitignore`.
@@ -44,11 +47,13 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 
 1. **Scope boundary.** This is the candidate-facing assessment app only. HR reviews results in the existing office dashboard; do not build an HR dashboard, reporting suite, or admin console here.
 2. **Separate data.** Use this application's own PostgreSQL database. Never connect to, query, or share tables with the office application's database.
-3. **Do not invent HR policy.** Assessment type, question content, scoring formula, pass thresholds, retention period, consent wording, and invitation rules are HR decisions. If one is needed, stop and record or update a question in `docs/HR_OPEN_QUESTIONS.md`.
-4. **No real data.** Never put real candidate data, names, emails, employee IDs, assessment responses, secrets, or credentials in the repository, tests, fixtures, screenshots, seeders, or logs. Use factories and fake data.
-5. **Data minimization.** Collect and log only what the confirmed requirements need. Avoid PII in application logs, URLs, and error tracking.
-6. **Minimal reliable deliverable.** Prefer the smallest tested implementation. Do not add packages, services, or architecture layers without approval.
-7. **Documentation stays current.** Update the relevant doc in the same change that alters scope, behavior, a decision, or a risk.
+3. **Do not invent HR policy.** Question content, the confidential scoring formula, DISC mappings, thresholds, interpretations, retention period, consent wording, and invitation rules are HR decisions. If one is needed, stop and record or update a question in `docs/HR_OPEN_QUESTIONS.md`. Never infer DISC output from question wording or the M/L labels (`D-022`).
+4. **Respect the M/L format.** One statement per question; the candidate chooses exactly **one** of M or L for that statement. Never add a second statement needing the opposite label, and never substitute multiple-choice or Likert options (`D-021`).
+5. **Protect history.** Questions referenced by an attempt are immutable; edits create a new version and removal is by archive (`D-006`, `D-024`).
+6. **No real data.** Never put real candidate data, names, emails, employee IDs, assessment responses, secrets, or credentials in the repository, tests, fixtures, screenshots, seeders, or logs. Use factories and fake data.
+7. **Data minimization.** Collect and log only what the confirmed requirements need. Avoid PII in application logs, URLs, and error tracking.
+8. **Minimal reliable deliverable.** Prefer the smallest tested implementation. Do not add packages, services, or architecture layers without approval.
+9. **Documentation stays current.** Update the relevant doc in the same change that alters scope, behavior, a decision, or a risk.
 
 ## Engineering conventions
 
@@ -58,6 +63,8 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 - Prefer named routes and the `route()` helper. Use Eloquent API Resources and versioned routes for APIs unless existing conventions differ.
 - Validate with Form Requests or Livewire validation; authorize on the server with policies/gates, including inside Livewire actions.
 - Target PostgreSQL. Avoid SQLite-only SQL and unsafe assumptions in migrations; prefer portable schema changes.
+- Enforce access windows, time limits, attempt limits, and answer validation on the server, never only in the browser (`D-019`).
+- Build the candidate UI mobile-first; keep M/L labels unambiguous and allow exactly one selection per statement.
 - Keep the existing UI stack: Blade, Livewire, Flux, Tailwind. Do not introduce React/Vue or a new CSS framework.
 - Do not create new top-level folders without approval. Stay within the existing structure.
 - Run `npm run build` if a frontend change does not appear or Vite reports a missing manifest.
@@ -65,7 +72,7 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 ## Testing and quality gates
 
 - Pest is the test framework. Default to feature tests; use `php artisan make:test --pest {name}`.
-- Add or update tests for meaningful behavior and failure modes, using model factories.
+- Add or update tests for meaningful behavior and failure modes, using model factories. Required coverage: exactly one M/L selection per question, second-attempt refusal, access-window and time-limit enforcement, cross-candidate denial, question-version immutability, and idempotent submission.
 - Run the narrowest relevant tests while working (`php artisan test --compact <path>` or `--filter=`). Tests run on PostgreSQL (`assessment_app_test`); `phpunit.xml` pins `APP_ENV` and `DB_DATABASE` via `<server>` so a sourced `.env` cannot redirect the suite at the development database.
 - Do not delete tests without approval.
 - Before finalizing PHP changes, run `vendor/bin/pint --dirty --format agent`.

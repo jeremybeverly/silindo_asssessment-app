@@ -1,28 +1,31 @@
 # Assessment App
 
-Candidate-facing online psychometric assessment application for HRD.
+Candidate-facing online DISC workplace personality assessment for HRD.
 
-> **Status: foundation approved; decisions pending.** The documentation set was approved on 2026-10-28 (Gate G0). No assessment features are implemented. Feature work waits on the P0 HR questions (Gate G1), and the launch date is under renegotiation — see `docs/ROADMAP.md`.
+> **Status: foundation complete; domain decisions pending.** The documentation set was approved on 2026-10-28 (Gate G0) and updated 2026-10-29 with HR confirmations (DISC, one-statement M/L format, access window, time limit, one attempt, mobile-first). No assessment features are implemented. Domain work waits on the remaining Gate G1 inputs (question content, identity fields, result fields) and the authorized scoring contract; the launch date is under renegotiation — see `docs/ROADMAP.md`.
 
 ## What this application is
 
 - A separate Laravel application with its **own PostgreSQL database** (**Confirmed**).
-- The place where candidates take an online assessment (**Confirmed**).
-- The owner of invitation records, token validation, attempts, responses, and result finalization (**Confirmed** boundary).
-- Intended to be the source of truth for candidate responses and finalized assessment results (**Proposed**).
+- The place where candidates take the DISC assessment on a **mobile-first** interface: one statement per question, exactly one **M (Most)** or **L (Least)** response (**Confirmed**, D-021).
+- The owner of question data and question rules, invitation records, token validation, attempts, responses, scoring, and result finalization (**Confirmed** boundary, D-022, D-023).
+- Source of truth for candidate responses and finalized assessment results (**Confirmed** boundary).
 - A system that hands finalized results to the existing internal office dashboard for HR review (**Confirmed need**; mechanism Pending).
+- Scoring is deferred: HR's rules are confidential and the authorized specification has not been provided (**Confirmed deferral**, D-022). No DISC scores or interpretations are invented here.
 
 ## What this application is not
 
-- Not an HR dashboard or reporting tool. HR works in the office application.
-- Not a psychometric instrument, scoring policy, or retention policy owner. Those are HR decisions.
+- Not an HR dashboard or reporting tool. HR works in the office application, including question-bank management.
 - Not connected directly to the office application's database.
-- Not assuming the office application already supports invitation APIs; that capability is unverified (`HRQ-29`).
+- Not an owner of HR policy: assessment content, scoring, retention, and invitation delivery are HR decisions.
+- Not a home for confidential scoring rules; only an authorized implementation or contract is integrated (D-022).
+- Not assuming the office application already supports the required APIs; that capability is unverified (`HRQ-29`).
 
-Integration with the office application covers two separate concerns (both **Proposed**; contracts not finalized):
+Integration with the office application covers three concerns (contracts not finalized):
 
-1. **Invitation lifecycle** — the office dashboard (the HR interface) requests invitation creation and receives the candidate link; revocation and status retrieval included (`D-018`; office-side capability unverified, `HRQ-29`).
-2. **Result handoff** — finalized results move to the office dashboard (`D-004`; raw-response export fallback is conditional on HR approval of its fields and sufficiency, `HRQ-08` / `HRQ-30`).
+1. **Question bank** — the office dashboard (the HR interface) performs question CRUD through this app's authenticated API (`D-023`).
+2. **Invitation lifecycle** — the office dashboard requests invitation creation and receives the candidate link, plus revocation and status (`D-018`).
+3. **Result handoff** — finalized results move to the office dashboard (`D-004`; raw-response export fallback is conditional on HR approval of its fields and sufficiency, `HRQ-08` / `HRQ-30`).
 
 ## Documentation
 
@@ -45,7 +48,9 @@ Status labels used throughout: **Confirmed**, **Proposed**, **Pending**, **Defer
 | UI | Livewire 4, Flux UI 2, Tailwind 4, Vite | Confirmed |
 | Auth | Laravel Fortify (starter kit: login, registration, 2FA, passkeys) | Confirmed scaffold |
 | Database | PostgreSQL 18.6 locally (`assessment_app`); tests on `assessment_app_test`; CI provisions `postgres:18` | Confirmed (D-014, 2026-10-28) |
-| Assessment domain | None | Confirmed |
+| Assessment domain | None (no models, migrations, or routes) | Confirmed |
+| Instrument | DISC; one shared bank; one statement per question; M/L only | Confirmed (D-021) |
+| Scoring | Deferred behind an authorized interface; no formula in repo | Confirmed deferral (D-022) |
 | Office integration | None | Confirmed |
 | Git repository | Initialized on `main`; initial commit `4a6bcd5` | Confirmed (2026-10-28) |
 
