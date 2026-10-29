@@ -25,6 +25,7 @@ Source: project brief supplied by the project owner on 2026-10-28, plus reposito
 | C-13 | Invitations have a defined access window; the assessment has a time limit; each invitation permits one attempt. | Confirmed (D-019). Durations and expiry behaviour Pending (HRQ-04). |
 | C-14 | The candidate-facing experience must be **mobile-first**. | Confirmed. Candidates are expected to take the assessment on phones. |
 | C-15 | HR's scoring rules are **confidential** and have not been provided to the developer. | Confirmed (D-022). Scoring, DISC mapping, and interpretation must not be invented. |
+| C-16 | The application is delivered in **Indonesian**: UI copy, validation messages, and emails; formal **Anda**; M/L labels translated while keeping Most/Least meanings. | Confirmed (D-026). Exact M/L wording Pending HR. Additional languages Deferred. |
 
 Beyond these, the MVP path and boundaries (D-016), invitation-only access (D-005), and randomized question order (D-020) are confirmed. No candidate identity field, result schema, scoring implementation, or deployment target has been agreed.
 
@@ -51,8 +52,8 @@ These remain proposals where marked. The MVP path and system boundaries were con
 | FR-15 | Candidate-facing pages are **mobile-first** and usable on current mobile and desktop browsers, with M/L explained plainly and exactly one selection allowed per question. | Confirmed (mobile-first) | HRQ-26 if formal accessibility requirements exist |
 | FR-16 | The app exposes a health endpoint and structured error handling without leaking candidate data. | Proposed | `/up` exists in the scaffold. |
 | FR-17 | No public candidate registration path is exposed in production. The starter kit's public auth routes/screens are disabled or removed per D-015. | Proposed (launch blocker) | Invitation-only access Confirmed (D-005); route treatment Proposed, approval Pending (D-015) |
-| FR-18 | The office dashboard manages the question bank through this app's authenticated API: list, search/filter, view, create, edit, preview the candidate M/L interface, and archive/delete per lifecycle rules, with draft/active states where required. **Required MVP outcome**; a CLI/CSV seeding helper is only an approved, time-boxed pilot exception and never the production design. | Confirmed (required MVP outcome) / Pending (contract) | D-023; contract Pending HRQ-29; lifecycle rules Pending HRQ-33 |
-| FR-19 | Questions are versioned. Questions used by an attempt cannot be destructively edited or deleted; changes create a new version and archiving preserves history. | Confirmed (requirement) / Proposed (implementation) | D-006, D-024; exact policy Pending HRQ-33 |
+| FR-18 | The office dashboard manages the question bank through this app's authenticated API: list, search/filter, view, create, edit, preview the candidate M/L interface, and archive/delete per lifecycle rules, with draft/active states where required. **Required MVP outcome**; a CLI/CSV seeding helper is only an approved, time-boxed pilot exception and never the production design. | Confirmed (required MVP outcome) / Pending (contract) | D-023, D-024; contract Pending HRQ-29 |
+| FR-19 | Questions are versioned per question. Editing appends a new version; new attempts use the newest version. An attempt keeps the versions it started with until completion, and referenced versions are never mutated or deleted. Archiving replaces deletion; cleanup follows retention (HRQ-18). | Confirmed | D-006, D-024 |
 | FR-20 | API credentials are held server-side only and are never exposed to browser-side code. | Confirmed | D-004; NFR-02 |
 | FR-21 | Mock scoring and mock results are used only for layout and integration testing, are clearly labelled as test data, and are never presented as real candidate results. | Confirmed | D-022 |
 
@@ -104,7 +105,7 @@ The MVP is acceptable when:
 | Multiple assessment instruments at launch | Deferred | Single instrument assumed for MVP (A-02). |
 | Retakes and attempt resets | Deferred | Policy not defined (HRQ-12). |
 | Automated email/SMS invitations | Deferred | Delivery channel Pending (HRQ-10). |
-| Localization | Deferred | English assumed (A-04). |
+| Additional languages (beyond Indonesian) | Deferred | Indonesian is confirmed (D-026). |
 | Native mobile apps | Deferred | Responsive web is sufficient. |
 | ATS/payroll integration | Deferred | No requirement. |
 

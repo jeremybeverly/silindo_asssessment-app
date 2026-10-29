@@ -7,6 +7,7 @@ Candidate-facing online DISC workplace personality assessment for HRD.
 ## What this application is
 
 - A separate Laravel application with its **own PostgreSQL database** (**Confirmed**).
+- Delivered in **Indonesian** — UI copy, validation messages, and emails (**Confirmed**, D-026); additional languages Deferred.
 - The place where candidates take the DISC assessment on a **mobile-first** interface: one statement per question, exactly one **M (Most)** or **L (Least)** response (**Confirmed**, D-021).
 - The owner of question data and question rules, invitation records, token validation, attempts, responses, scoring, and result finalization (**Confirmed** boundary, D-022, D-023).
 - Source of truth for candidate responses and finalized assessment results (**Confirmed** boundary).

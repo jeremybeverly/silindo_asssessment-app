@@ -24,6 +24,8 @@ Gates gate different slices, not the whole project. The scoring contract blocks 
 | Question-bank MVP integration (G6) | HRQ-29 office-side capability | HRQ-32 |
 | Scoring integration (G8) | HRQ-32 authorized specification/contract | — |
 
+**Slice exception:** the question-bank subset (questions, versions, question API) may proceed once HRQ-02 and HRQ-33 are recorded. HRQ-11 is only required for invitation/attempt/result schema, so it does not block Phase 3's question work.
+
 ## 1. Reality check
 
 The original 31 October target is superseded; the launch date is under renegotiation (D-017). The MVP shape is:
@@ -72,7 +74,7 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 - Invented DISC scoring, mappings, thresholds, or interpretations.
 - Proctoring, webcam, screen recording, or automatic cheating disqualification.
 - Candidate accounts or self-registration.
-- Localization.
+- Additional languages beyond Indonesian.
 - Native mobile apps.
 - Psychometric validation or formula design.
 
@@ -252,7 +254,7 @@ If the schedule slips, cut in this order:
 - Automated email/SMS invitations and reminders.
 - Retakes, resets, and void/reissue workflow.
 - Multiple instruments and role-based complete sets (question-order randomization already applies, D-020).
-- Accessibility audit and localization.
+- Accessibility audit and additional languages.
 - Reporting/analytics in the office dashboard.
 - Proctoring or identity verification, only if formally requested.
 
