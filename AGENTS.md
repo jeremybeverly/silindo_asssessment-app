@@ -2,17 +2,15 @@
 
 Project-wide instructions for any coding agent (OpenCode, Codex, Cursor, Claude, etc.). Tool-specific configuration must not override this file.
 
-## Project status: decision phase
+## Project status: implementation underway
 
 - The documentation foundation was **approved on 2026-10-28** (Gate G0). The MVP path and system boundaries are confirmed (`docs/DECISIONS.md` D-016).
-- HR confirmed the instrument and core flow on **2026-10-29**: DISC framework, one shared question bank, one statement per question with exactly one **M (Most)** or **L (Least)** response, invitation access window, assessment time limit, one attempt per invitation, and a mobile-first candidate experience (`D-019`, `D-021`). HR's scoring rules are **confidential** and not supplied (`D-022`).
-- Domain/schema work is gated only on the schema inputs: question content, identity fields, question lifecycle rules, and the API boundary (`docs/ROADMAP.md` §0 "Gate scopes"). The scoring contract is **not** a prerequisite — see D-022.
-- Candidate-flow behaviour is finalized for production only when timing/expiry, resume, finalization, and result-field policies are settled (HRQ-04, HRQ-08, HRQ-12, HRQ-17). Build the mechanism with configuration; do not invent the policy.
-- Scoring integration waits on HRQ-32 (authorized specification). Never invent DISC formulas, mappings, thresholds, interpretations, or result fields.
-- **Permitted now:** documentation work, scaffold inspection, tooling, and tests that do not encode unresolved policy.
-- **Still prohibited:** domain migrations, models, routes, or UI that depend on unresolved requirements; any invented DISC scoring, mapping, threshold, or interpretation; committing real candidate data or secrets. These wait for the named scope inputs, or an explicit decision recorded in `docs/DECISIONS.md`.
+- **Gate G1 schema inputs are satisfied (2026-10-29):** question format (D-021), question lifecycle (D-024), candidate identity (D-027), and the API boundary (D-004/D-023). Question content is data entered by HR through the API, not a schema gate.
+- **Implemented on `main`:** question bank (`questions` / `question_versions`, immutable versions, `/api/v1/questions`), invitations and attempts (`/api/v1/invitations`, `StartAttempt`, persisted question order), Sanctum API skeleton, Indonesian locale.
+- **Not implemented:** candidate entry/UI, M/L response capture, result finalization, scoring, office-dashboard integration.
+- Production candidate behaviour is finalized only when HRQ-04, HRQ-08, HRQ-12, and HRQ-17 are settled; scoring waits on HRQ-32; office capability on HRQ-29. Never invent DISC formulas, mappings, thresholds, interpretations, or result fields.
 - **Question-bank management through the office dashboard is a required MVP outcome** (D-023). A CLI/CSV seeding helper is permitted only as an explicitly approved, time-boxed pilot exception — never as the production design.
-- When a domain slice is approved, work in small, tested slices against `docs/REQUIREMENTS.md` and `docs/ROADMAP.md`.
+- Work in small, tested slices against `docs/REQUIREMENTS.md` and `docs/ROADMAP.md`; update documentation in the same change.
 
 ## Read before changing anything
 
@@ -38,8 +36,9 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 ## Confirmed baseline (verified 2026-10-29)
 
 - Laravel **13.39**, PHP **8.5** runtime (`composer.json` requires `^8.3`), Livewire **4.4.8**, Flux UI **2.21.0**, Fortify, Pest **5.3**, Tailwind **4**, Vite.
-- Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
-- No assessment domain code, routes, or tables exist.
+- Starter-kit features remain: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
+- **Assessment domain implemented:** `Question` / `QuestionVersion` (append-only, enforced by Eloquent guards and a PostgreSQL trigger), `Invitation`, `Attempt`, `AttemptQuestion`; `/api/v1/questions` and `/api/v1/invitations`; `StartAttempt` action.
+- **Not implemented:** candidate entry/UI, M/L response capture, result finalization, scoring, office-dashboard integration.
 - The instrument is **DISC**; each question is a single statement answered with exactly one **M (Most)** or **L (Least)**. No paired statements, no A/B/C/D or Likert variants (`D-021`).
 - The application is **Indonesian-only** (`APP_LOCALE=id`), formal *Anda*; API messages stay English for the machine contract (`D-026`).
 - HR's scoring rules are confidential; no formula, mapping, threshold, or interpretation exists in the repository (`D-022`).

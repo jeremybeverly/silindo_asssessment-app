@@ -376,6 +376,7 @@ This log records project and technical decisions. HR policy decisions are owned 
   - Office-initiated calls only. The dashboard holds a scoped token; the assessment app does not call the dashboard.
   - Contract-first: define the `/api/v1` contract before either side writes integration code; each seam is independently shippable behind its own flag.
   - **Seam order (implementation, not scope):** results (read-only, lowest risk) → invitations (small idempotent write) → question CRUD (largest write surface, needs HRQ-33). Question CRUD remains a required MVP outcome (D-023); this order does not defer it.
+  - **Amended 2026-10-29:** implementation ran in a different order for practical reasons — the question API first (required for HR content), then invitations/attempts. Results remain last and uncontracted. The risk ranking above still applies to the remaining seams.
   - Each seam has a documented fallback (D-009 export; approved, time-boxed invitation/question seeding) so integration is never on the critical path for a working assessment.
 - **Impact:** Dashboard changes are isolated and reversible. Prerequisites: repository separation between the two apps, an assessment-side token mechanism (none installed), and office confirmation of HRQ-29 plus contract/environment details (HRQ-14/15/16). Failure of the assessment API affects only the new pages.
 - **Review trigger:** Office team confirms HRQ-29 and the auth mechanism; before the first dashboard integration branch is merged.

@@ -65,13 +65,13 @@ Read-only inspection on 2026-10-29.
 | UI stack | Livewire 4.4.8, Flux 2.21.0, Tailwind 4, Vite | `composer.lock`, `package.json` |
 | Auth | Fortify 1.41.0, passkeys 0.2.1; session guard | `composer.lock`, `config/auth.php` |
 | Public registration | **Active**: `/register` (GET+POST), `/login`, password reset, 2FA, passkeys | `config/fortify.php` features; `php artisan route:list` |
-| API surface | **None**: no `routes/api.php`, no API middleware group, no Sanctum/Passport | `routes/`, `bootstrap/app.php`, `composer.json` |
-| Domain code | **None**: only `User` model; 5 starter migrations; no assessment tables/routes | `app/Models`, `database/migrations` |
-| Database | PostgreSQL 18.6; 10 tables; 5 migrations ran | `php artisan db:show`, `migrate:status` |
+| API surface | `/api/v1` with Sanctum: `ping`, `questions`, `invitations`; shared envelope; **no token abilities/scopes yet**; contract Pending | `routes/api.php`, `bootstrap/app.php` |
+| Domain code | `Question`, `QuestionVersion` (append-only, Eloquent + PostgreSQL trigger), `Invitation`, `Attempt`, `AttemptQuestion`; 9 assessment migrations | `app/Models`, `database/migrations` |
+| Database | PostgreSQL 18.6; starter + assessment migrations applied | `php artisan db:show`, `migrate:status` |
 | Test DB | `pgsql` / `assessment_app_test`, pinned via `<server>` so a sourced `.env` cannot redirect it | `phpunit.xml` |
 | CI | GitHub Actions with `postgres:18` service and matching `DB_*` env | `.github/workflows/tests.yml` |
 | Quality gates | Pint (Laravel preset), PHPStan/Larastan level 7 with `--memory-limit=1G`, Pest 5.3.4 | `pint.json`, `phpstan.neon`, `composer.json` |
-| Baseline tests | **34 tests / 83 assertions passing** on PostgreSQL (verified this run) | `php artisan test --compact` |
+| Baseline tests | **66 tests / 183 assertions passing** on PostgreSQL (verified 2026-10-29 on merged `main`) | `composer ci:check` |
 | Git | Repository on `main`; `origin` remote configured (GitHub); branch ahead of the remote at inspection; branch protection unverified | `git remote -v`, `git branch -vv` |
 
 ### Environment caveats (not documentation defects)
