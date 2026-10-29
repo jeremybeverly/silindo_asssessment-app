@@ -55,6 +55,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | D-023 | Question bank managed through the office dashboard API | Confirmed boundary; contract Pending |
 | D-024 | Question versioning protects historical attempts | Confirmed (2026-10-29) |
 | D-025 | Integration approach: provider/consumer with additive, flag-gated seams | Proposed |
+| D-026 | Indonesian-only candidate experience | Confirmed (2026-10-29); label wording Pending HR |
 
 ## D-001: Separate candidate-facing application
 
@@ -376,6 +377,22 @@ This log records project and technical decisions. HR policy decisions are owned 
   - Each seam has a documented fallback (D-009 export; approved, time-boxed invitation/question seeding) so integration is never on the critical path for a working assessment.
 - **Impact:** Dashboard changes are isolated and reversible. Prerequisites: repository separation between the two apps, an assessment-side token mechanism (none installed), and office confirmation of HRQ-29 plus contract/environment details (HRQ-14/15/16). Failure of the assessment API affects only the new pages.
 - **Review trigger:** Office team confirms HRQ-29 and the auth mechanism; before the first dashboard integration branch is merged.
+
+## D-026: Indonesian-only candidate experience
+
+- **Status:** Confirmed (2026-10-29); M/L label wording Pending HR approval
+- **Date:** 2026-10-29
+- **Owner:** Project owner (direction) + HR (copy approval)
+- **Context:** The application is for Indonesian-speaking candidates. The earlier documentation assumed English (A-04) and listed localization as deferred.
+- **Decision:**
+  - The application locale is **`id`** with an English fallback for framework strings that are not yet translated.
+  - All candidate-facing copy, validation messages, and transactional emails are in **Indonesian**, using the formal **Anda**.
+  - **M/L labels are translated while preserving the confirmed Most/Least meanings** (D-021). Proposed wording: **M — Paling menggambarkan saya**, **L — Paling tidak menggambarkan saya**; short form **M (Paling)** / **L (Paling tidak)**. Exact wording requires HR approval.
+  - Question statements are Indonesian by default (`language = id`); HR supplies the content.
+  - **API messages stay English/stable** for the machine-to-machine contract; the dashboard localises its own display.
+  - Additional languages are **Deferred**.
+- **Impact:** Locale configuration, `lang/id` translation files, date/number formatting, and every candidate screen must be Indonesian from the start. Tests assert the locale and translated validation messages.
+- **Review trigger:** HR approves the M/L wording; any request for a second language.
 
 ## Deliberately not decided yet
 

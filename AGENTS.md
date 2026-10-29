@@ -41,6 +41,7 @@ Never upgrade a label without evidence. Record decisions in `docs/DECISIONS.md` 
 - Only starter-kit features exist: welcome page, dashboard, authentication (login, registration, password reset, email verification, 2FA, passkeys), settings.
 - No assessment domain code, routes, or tables exist.
 - The instrument is **DISC**; each question is a single statement answered with exactly one **M (Most)** or **L (Least)**. No paired statements, no A/B/C/D or Likert variants (`D-021`).
+- The application is **Indonesian-only** (`APP_LOCALE=id`), formal *Anda*; API messages stay English for the machine contract (`D-026`).
 - HR's scoring rules are confidential; no formula, mapping, threshold, or interpretation exists in the repository (`D-022`).
 - Local development and tests run on **PostgreSQL 18.6** (`assessment_app` for the app, `assessment_app_test` for tests); `.env` is gitignored. `.env.example`, `phpunit.xml`, and CI all target PostgreSQL (D-014, Confirmed 2026-10-28).
 - No integration with the office dashboard exists.

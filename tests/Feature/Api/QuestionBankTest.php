@@ -33,6 +33,12 @@ it('creates a question with its first version', function (): void {
     ]);
 });
 
+it('defaults the question language to Indonesian', function (): void {
+    $this->postJson('/api/v1/questions', ['statement' => 'Tenang'])
+        ->assertCreated()
+        ->assertJsonPath('data.language', 'id');
+});
+
 it('appends a version on edit and leaves the previous version intact', function (): void {
     $question = Question::factory()->create();
     $question->versions()->create([

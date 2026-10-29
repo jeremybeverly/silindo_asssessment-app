@@ -57,7 +57,7 @@ Deliver a minimal, reliable candidate assessment application — launch date und
 | Candidate accounts, self-registration, social login | **Confirmed out** | Invitation-only access confirmed (D-005, 2026-10-28); disabling/removing the starter kit's public auth routes is Proposed (D-015) and a launch blocker. |
 | Proctoring, webcam, identity verification | **Deferred** | Not requested; would add cost and privacy burden. |
 | ATS/payroll integration, multi-tenant support | **Deferred** | No requirement. |
-| Localization beyond English | **Deferred** | Confirm with HR if candidates require other languages. |
+| Localization beyond Indonesian | **Deferred** | Indonesian is the confirmed language (D-026). |
 | Native mobile apps | **Deferred** | Responsive web only. |
 
 ## 5. System context
@@ -109,7 +109,7 @@ Office Dashboard (existing Laravel, PostgreSQL) — the HR interface
 | A-01 | Candidates access the assessment through a unique invitation link, without creating an account. **Confirmed via D-005 (2026-10-28).** | Would require authentication, registration, and password-reset scope. |
 | A-02 | One assessment instrument (DISC) is launched; multiple instruments or role-based sets come later. | Schema and UI must support multiple definitions sooner. |
 | A-03 | One attempt per invitation; an invitation has an access window and the assessment has a time limit. **Confirmed (D-019); durations Pending.** Resuming an active attempt is **Proposed** (HRQ-12). | Durations, resume, and retake rules change the data model and support process. |
-| A-04 | The assessment is delivered in English. | Adds translation and content-versioning scope. |
+| A-04 | The assessment is delivered in **Indonesian** (confirmed D-026); additional languages are Deferred. | A second language adds translation and content-versioning scope. |
 | A-05 | Raw M/L responses can be stored and reviewed before the scoring specification is available. | If raw storage is not acceptable, scoring must be decided before schema work. |
 | A-06 | A CSV/JSON export is an acceptable temporary handoff if the API is not ready, **provided HR approves the export fields and confirms the available data suffices for review (HRQ-30)**. | Manual HR work or a hard dependency on the office team. |
 | A-07 | The office team can expose or consume an authenticated endpoint. | Integration may need a different mechanism or manual import. |

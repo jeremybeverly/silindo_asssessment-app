@@ -34,7 +34,7 @@ class QuestionController extends Controller
         $version = $question->versions()->create([
             'version' => 1,
             'statement' => $request->string('statement')->toString(),
-            'language' => $request->input('language'),
+            'language' => $request->input('language') ?? 'id',
         ]);
 
         return (new QuestionVersionResource($version->load('question')))

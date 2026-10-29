@@ -25,6 +25,7 @@ Source: project brief supplied by the project owner on 2026-10-28, plus reposito
 | C-13 | Invitations have a defined access window; the assessment has a time limit; each invitation permits one attempt. | Confirmed (D-019). Durations and expiry behaviour Pending (HRQ-04). |
 | C-14 | The candidate-facing experience must be **mobile-first**. | Confirmed. Candidates are expected to take the assessment on phones. |
 | C-15 | HR's scoring rules are **confidential** and have not been provided to the developer. | Confirmed (D-022). Scoring, DISC mapping, and interpretation must not be invented. |
+| C-16 | The application is delivered in **Indonesian**: UI copy, validation messages, and emails; formal **Anda**; M/L labels translated while keeping Most/Least meanings. | Confirmed (D-026). Exact M/L wording Pending HR. Additional languages Deferred. |
 
 Beyond these, the MVP path and boundaries (D-016), invitation-only access (D-005), and randomized question order (D-020) are confirmed. No candidate identity field, result schema, scoring implementation, or deployment target has been agreed.
 
@@ -104,7 +105,7 @@ The MVP is acceptable when:
 | Multiple assessment instruments at launch | Deferred | Single instrument assumed for MVP (A-02). |
 | Retakes and attempt resets | Deferred | Policy not defined (HRQ-12). |
 | Automated email/SMS invitations | Deferred | Delivery channel Pending (HRQ-10). |
-| Localization | Deferred | English assumed (A-04). |
+| Additional languages (beyond Indonesian) | Deferred | Indonesian is confirmed (D-026). |
 | Native mobile apps | Deferred | Responsive web is sufficient. |
 | ATS/payroll integration | Deferred | No requirement. |
 
