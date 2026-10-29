@@ -358,6 +358,7 @@ This log records project and technical decisions. HR policy decisions are owned 
   - Questions and versions referenced by an attempt are **not deleted**; archiving replaces deletion.
   - Cleanup of superseded versions after all referencing attempts finish is subject to the retention policy (HRQ-18).
 - **Impact:** Schema needs question version identity and attempts must store the version shown. Prevents retroactive meaning changes; superseded versions stay addressable.
+- **Enforcement (2026-10-29):** append-only is enforced in two layers — Eloquent guards on `QuestionVersion` reject updates/deletes, and a PostgreSQL trigger rejects direct `UPDATE`/`DELETE` on `question_versions`. Editing a question still appends a new version; archiving leaves versions untouched.
 - **Review trigger:** HRQ-18 (retention) and any change to the versioning policy.
 
 ## D-025: Integration approach: provider/consumer with additive, flag-gated seams
