@@ -24,6 +24,8 @@ Gates gate different slices, not the whole project. The scoring contract blocks 
 | Question-bank MVP integration (G6) | HRQ-29 office-side capability | HRQ-32 |
 | Scoring integration (G8) | HRQ-32 authorized specification/contract | — |
 
+**Slice exception:** the question-bank subset (questions, versions, question API) may proceed once HRQ-02 and HRQ-33 are recorded. HRQ-11 is only required for invitation/attempt/result schema, so it does not block Phase 3's question work.
+
 ## 1. Reality check
 
 The original 31 October target is superseded; the launch date is under renegotiation (D-017). The MVP shape is:

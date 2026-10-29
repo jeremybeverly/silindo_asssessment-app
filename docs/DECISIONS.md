@@ -53,7 +53,7 @@ This log records project and technical decisions. HR policy decisions are owned 
 | D-021 | DISC instrument with one-statement M/L responses | Confirmed (2026-10-29) |
 | D-022 | Confidential scoring implemented only from an authorized specification | Confirmed deferral; implementation Pending |
 | D-023 | Question bank managed through the office dashboard API | Confirmed boundary; contract Pending |
-| D-024 | Question versioning protects historical attempts | Confirmed requirement; implementation Proposed |
+| D-024 | Question versioning protects historical attempts | Confirmed (2026-10-29) |
 | D-025 | Integration approach: provider/consumer with additive, flag-gated seams | Proposed |
 
 ## D-001: Separate candidate-facing application
@@ -346,13 +346,18 @@ This log records project and technical decisions. HR policy decisions are owned 
 
 ## D-024: Question versioning protects historical attempts
 
-- **Status:** Confirmed requirement; implementation Proposed
+- **Status:** Confirmed (2026-10-29)
 - **Date:** 2026-10-29
-- **Owner:** Engineering + HR
+- **Owner:** Project owner (policy stated 2026-10-29); HR acknowledgement Pending
 - **Context:** Editing or deleting a question after it has been used would silently change what a past candidate answered, corrupting the meaning of stored results.
-- **Decision:** Questions and their response identifiers are versioned. An attempt references the exact question versions it presented. Questions used by any attempt cannot be destructively edited; changes create a new version, and archiving replaces deletion where history must be preserved. The exact edit/archive policy is Pending (HRQ-33).
-- **Impact:** Schema needs question version identity (not just a mutable row), and every response keys on the version shown. Prevents retroactive meaning changes; adds modest schema and API complexity.
-- **Review trigger:** HRQ-33 answered; before the question schema is finalized.
+- **Decision:**
+  - Versioning is **per question**. Editing a question appends a new version; the previous version is never mutated.
+  - New attempts use the **newest version** of each question at the time the attempt starts.
+  - An attempt keeps the exact versions it started with until it completes, even if the bank is edited meanwhile.
+  - Questions and versions referenced by an attempt are **not deleted**; archiving replaces deletion.
+  - Cleanup of superseded versions after all referencing attempts finish is subject to the retention policy (HRQ-18).
+- **Impact:** Schema needs question version identity and attempts must store the version shown. Prevents retroactive meaning changes; superseded versions stay addressable.
+- **Review trigger:** HRQ-18 (retention) and any change to the versioning policy.
 
 ## D-025: Integration approach: provider/consumer with additive, flag-gated seams
 

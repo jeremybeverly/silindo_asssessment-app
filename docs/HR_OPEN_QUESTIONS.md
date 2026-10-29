@@ -47,7 +47,7 @@ The interim G1 target is **2026-10-29 12:00**. With the launch date under renego
 | HRQ-08 | Exactly which detailed result fields must HR see (DISC scores, per-dimension results, dominant style, timestamps, candidate reference), and what is approved as test/mock data versus real output? | Defines the finalized-result snapshot, report layout, and export/API contract. | **P0** for result slice | No default for integration. | HR |
 | HRQ-30 | If authorized scoring is not available in time, are raw response snapshots acceptable as the result HR reviews, or must launch wait for approved scoring? | Makes the export fallback (D-009) conditional; prevents presenting raw data as a scored result. | P1 | No handoff launch; raw data is not labelled a DISC result. | HR |
 | HRQ-32 | What is the authorized scoring integration contract: required inputs, outputs, validation, error handling, and versioning? Which implementation/version must each finalized result record? | The only safe basis for scoring (D-022). The formula itself need not be disclosed. | P0 for scoring slice | No scoring; raw capture only. | HR / psychometrics owner |
-| HRQ-33 | What are the rules for editing and archiving questions already used in attempts? Who may archive, and when is a new version created? | Protects historical meaning and the question-bank lifecycle (D-024). | P1 (P0 for question CRUD) | Version-on-edit, archive instead of delete (Proposed D-024). | HR |
+| HRQ-33 | What are the rules for editing and archiving questions already used in attempts? Who may archive, and when is a new version created? | Protects historical meaning and the question-bank lifecycle (D-024). | Answered (2026-10-29) | Answered: edits append a version; newest used for new attempts; started versions are kept until completion; archive replaces delete. See response log. | HR |
 
 ## B. Invitation and candidate identity
 
@@ -122,6 +122,7 @@ Record answers here, then update the affected requirements and decisions. Do not
 | HRQ-02 (partial) | One shared question bank; one statement per question; exactly one M or L per statement (no paired statement, no A/B/C/D or Likert). Question wording, count, and source file still outstanding. | HR | 2026-10-29 | D-021, FR-05, C-11 |
 | HRQ-03 | Partial: every candidate receives the complete question set; question order randomized per attempt. Remaining: multiple complete sets/role-based instruments. | Project owner | 2026-10-28 | D-020, FR-05, ROADMAP |
 | D-019 rules | Invitation access window, assessment time limit, one attempt per invitation confirmed; durations and expiry behaviour outstanding (HRQ-04). Resumption still Proposed (HRQ-12). | HR | 2026-10-29 | D-019, FR-04, FR-07 |
+| HRQ-33 | Editing creates a new version; new attempts use the newest version. An attempt keeps the questions/versions it started with until completion; those versions are not changed or deleted while referenced. Archive replaces delete; cleanup after attempts finish follows retention (HRQ-18). | Project owner | 2026-10-29 | D-024, FR-19 |
 
 ## Rules for interpreting silence
 
