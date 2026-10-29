@@ -2,7 +2,7 @@
 
 Candidate-facing online DISC workplace personality assessment for HRD.
 
-> **Status: foundation complete; domain decisions pending.** The documentation set was approved on 2026-10-28 (Gate G0) and updated 2026-10-29 with HR confirmations (DISC, one-statement M/L format, access window, time limit, one attempt, mobile-first). No assessment features are implemented. Schema work waits on the schema inputs only (question content, identity fields, question lifecycle, API boundary); scoring has its own gate (HRQ-32) and does not block capture work. The launch date is under renegotiation — see `docs/ROADMAP.md`.
+> **Status: implementation underway.** The documentation set was approved on 2026-10-28 (Gate G0). Gate G1 schema inputs are satisfied (2026-10-29): DISC/M-L format, question lifecycle, candidate identity, and the API boundary. The question bank and invitation/attempt foundations are implemented on `main`; candidate entry/UI, results, scoring, and office-dashboard integration remain. The launch date is under renegotiation — see `docs/ROADMAP.md`.
 
 ## What this application is
 
@@ -49,8 +49,9 @@ Status labels used throughout: **Confirmed**, **Proposed**, **Pending**, **Defer
 | UI | Livewire 4, Flux UI 2, Tailwind 4, Vite | Confirmed |
 | Auth | Laravel Fortify (starter kit: login, registration, 2FA, passkeys) | Confirmed scaffold |
 | Database | PostgreSQL 18.6 locally (`assessment_app`); tests on `assessment_app_test`; CI provisions `postgres:18` | Confirmed (D-014, 2026-10-28) |
-| Assessment domain | None (no models, migrations, or routes) | Confirmed |
+| Assessment domain | Question bank (immutable versions), invitations + attempts; no candidate UI/results | Implemented 2026-10-29 |
 | Instrument | DISC; one shared bank; one statement per question; M/L only | Confirmed (D-021) |
+| API | `/api/v1` (Sanctum), shared `{success, code, message, data}` envelope | Implemented; contract Pending |
 | Scoring | Deferred behind an authorized interface; no formula in repo | Confirmed deferral (D-022) |
 | Office integration | None | Confirmed |
 | Git repository | Initialized on `main`; initial commit `4a6bcd5` | Confirmed (2026-10-28) |

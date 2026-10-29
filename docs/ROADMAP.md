@@ -5,12 +5,13 @@
 ## 0. Schedule status (2026-10-29)
 
 - Gate G0 passed: documentation approved; MVP path and system boundaries confirmed (D-016).
-- Gate G2a passed: foundation complete — git, PostgreSQL, CI (D-014), 34 tests green.
-- HR confirmed the instrument, response format, access window, time limit, one attempt, and mobile-first on 2026-10-29 (D-019, D-021, D-022, D-023).
+- Gate G2a passed: foundation complete — git, PostgreSQL, CI (D-014); baseline 34 tests green at the time.
+- **Gate G1 schema inputs satisfied (2026-10-29):** question format (D-021), lifecycle (D-024), candidate identity (D-027), API boundary (D-004/D-023). Question content is entered by HR; it is no longer a schema gate.
+- **Implemented on `main`:** question bank (immutable versions), invitation/attempt foundations, `/api/v1`, Indonesian locale. Candidate UI, results, scoring and office integration remain.
 - Sponsor initiated launch-date renegotiation (D-017); the new launch date is Pending (HRQ-28).
 - Phases keep the sequence below; calendar dates are placeholders until the new launch date is agreed.
 
-The scope tiers and phase sequence were approved on 2026-10-28 and extended 2026-10-29. Remaining inputs are tracked in `HR_OPEN_QUESTIONS.md`; the interim G1 target is 2026-10-29 12:00 pending re-baseline.
+The scope tiers and phase sequence were approved on 2026-10-28 and extended 2026-10-29. Remaining inputs are tracked in `HR_OPEN_QUESTIONS.md`; the current suite is 66 tests / 183 assertions on PostgreSQL.
 
 ### Gate scopes
 
@@ -18,13 +19,13 @@ Gates gate different slices, not the whole project. The scoring contract blocks 
 
 | Scope | Required inputs | Not required |
 | --- | --- | --- |
-| Domain/schema foundation (G1 → G2b, G3) | HRQ-02 question content, HRQ-11 identity fields, HRQ-33 question lifecycle, HRQ-29 API boundary | HRQ-32 scoring contract, HRQ-04 durations, HRQ-08 result fields |
-| Candidate attempt flow (G4, G5) — buildable with configuration | HRQ-02, HRQ-11, HRQ-33 (questions seeded via approved pilot helper if the API is not ready) | HRQ-32, HRQ-29 office-side delivery |
+| Domain/schema foundation | Question format (D-021), question lifecycle (D-024), candidate identity (D-027), API boundary (D-004/D-023) | HRQ-32 scoring contract; question content is data entry |
+| Candidate attempt flow (G4, G5) — buildable with configuration | The above inputs | HRQ-32, HRQ-29 office-side delivery |
 | Candidate attempt flow — production-ready behaviour | HRQ-04 access-window/time-limit values and expiry handling, HRQ-12 resume/reset, HRQ-17 finalization, HRQ-08 result fields | — |
 | Question-bank MVP integration (G6) | HRQ-29 office-side capability | HRQ-32 |
 | Scoring integration (G8) | HRQ-32 authorized specification/contract | — |
 
-**Slice exception:** the question-bank subset (questions, versions, question API) may proceed once HRQ-02 and HRQ-33 are recorded. HRQ-11 is only required for invitation/attempt/result schema, so it does not block Phase 3's question work.
+**Status:** the schema inputs are satisfied (2026-10-29). Question-bank and invitation/attempt foundations are implemented on `main`; HR enters question content through the API. Office-side question management and the candidate flow remain.
 
 ## 1. Reality check
 
@@ -133,27 +134,27 @@ The MVP path and boundaries are Confirmed (D-016). The items below keep their ow
 
 ### Phase 3 — Question bank domain and authenticated API
 
-**Owner:** Engineering
+**Owner:** Engineering · **Status:** implemented on `main` (2026-10-29); search/filter/pagination and the written contract remain
 
-- Implement question lifecycle states (draft, active, archived) and version-on-edit.
-- Expose authenticated API endpoints for list, search/filter, view, create, update, archive; validation and idempotency where needed.
-- Enforce the rule that a version referenced by an attempt cannot be mutated.
-- Tests: version immutability after use, M/L response identifiers, validation failures.
+- Append-only `Question` / `QuestionVersion`, archive instead of delete, version-on-edit.
+- `/api/v1/questions`: list (latest version), create, show, update (appends), archive; validation and envelope.
+- Enforced immutability: Eloquent guards plus a PostgreSQL trigger.
+- Outstanding: search/filter/pagination (FR-18), documented API contract, draft/active states (not confirmed as required).
 
 **Gate G3 — Question bank ready**
-- The API contract is documented and tested; no operation can silently change a question used by an attempt.
+- Version immutability and archive semantics are tested and enforced.
+- **Partial:** the API contract is not documented yet, and list/filter behaviour for the HR screen is incomplete.
 
 ### Phase 4 — Invitation and attempt lifecycle
 
-**Owner:** Engineering
+**Owner:** Engineering · **Status:** foundations implemented on `main` (2026-10-29); candidate entry and policy pending
 
-- Invitation creation, revocation, status; hashed tokens; access-window enforcement.
-- One attempt per invitation; server-side attempt state and deadline; autosave; resume of the same attempt.
-- Tests: second attempt refused, access window enforced, deadline enforced on direct requests.
+- Implemented: invitation creation/list/revoke with hashed tokens and access window; one attempt per invitation; `StartAttempt` freezes the randomized question order and latest active versions.
+- Outstanding: candidate entry route (token → consent → start), deadline configuration (HRQ-04), submission/autosave (candidate UI), resume policy (HRQ-12).
 
 **Gate G4 — Attempt lifecycle ready**
-- A second attempt cannot be created by any route; window and deadline are enforced server-side with configured values.
-- Production behaviour (auto-submit, unanswered-question handling, resume) is finalized only after HRQ-04/HRQ-12 are recorded; the mechanism is built, the policy is configured.
+- A second attempt cannot be created; invitation revocation and the access window are enforced server-side.
+- **Partial:** the time limit is not implemented because its value/expiry behaviour is Pending (HRQ-04). Production behaviour waits on HRQ-04/HRQ-12.
 
 ### Phase 5 — Mobile-first candidate assessment UI (M/L)
 
